@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Page 2 of the ABOT red-team guide: the points chosen for Q&amp;A, reviewed and regrouped into 9 sets, each with an opening line to learn.">
+<title>ABOT Q&amp;A prep plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..800&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&amp;display=swap">
+<style>
+/* Layout: a sticky search bar; a contents rail on the left that becomes a drawer on phones;
+   one reading column in which every point sets each problem beside its reason.
+   Palette and type follow study/abot-study-route.html so the two study pages read as one set. */
+:root {
+  --bg: #F2F5F6;
+  --surface: #FFFFFF;
+  --ink: #13202A;
+  --muted: #566874;
+  --rule: #D5DDE2;
+  --rule-strong: #8C9EA9;
+  --net: #0B717C;        /* have an answer ready; links and focus */
+  --net-soft: #E0F0F1;
+  --alg: #8A5800;        /* major priority; outside-fact flag */
+  --alg-soft: #F6ECD8;
+  --learn: #4D57A3;      /* watch your wording */
+  --learn-soft: #E8EAF6;
+  --sos: #BF3B25;        /* critical priority; avoid */
+  --sos-soft: #FBE8E3;
+  --done: #2B7A4B;       /* say instead; checklist */
+  --done-soft: #E2F1E7;
+  --minor: #6B6514;      /* minor priority */
+  --plan: #8A2E6A;       /* page 2, the Q&A prep plan */
+  --plan-soft: #F6E7F0;
+  --hl: #FFE27A;         /* search hits */
+  --scrim: rgba(13, 21, 27, .45);
+  --shadow: 0 1px 2px rgba(19, 32, 42, .06), 0 12px 32px rgba(19, 32, 42, .14);
+  --f-display: "Archivo", "Arial Narrow", Arial, sans-serif;
+  --f-body: "Public Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --bar-h: 3.5rem;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D151B; --surface: #142028; --ink: #E1E8EC; --muted: #98A9B4;
+    --rule: #26353F; --rule-strong: #546976;
+    --net: #55BFC9; --net-soft: #12313A; --alg: #E2B661; --alg-soft: #382A12;
+    --learn: #9DA6F0; --learn-soft: #1D2343; --sos: #FF876A; --sos-soft: #3A1D17;
+    --done: #6FCC94; --done-soft: #143222; --minor: #D6CC6E; --hl: #6A5714;
+    --plan: #EE9ACB; --plan-soft: #3B1A30;
+    --scrim: rgba(0, 0, 0, .55);
+    --shadow: 0 1px 2px rgba(0, 0, 0, .35), 0 12px 32px rgba(0, 0, 0, .45);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D151B; --surface: #142028; --ink: #E1E8EC; --muted: #98A9B4;
+  --rule: #26353F; --rule-strong: #546976;
+  --net: #55BFC9; --net-soft: #12313A; --alg: #E2B661; --alg-soft: #382A12;
+  --learn: #9DA6F0; --learn-soft: #1D2343; --sos: #FF876A; --sos-soft: #3A1D17;
+  --done: #6FCC94; --done-soft: #143222; --minor: #D6CC6E; --hl: #6A5714;
+    --plan: #EE9ACB; --plan-soft: #3B1A30;
+  --scrim: rgba(0, 0, 0, .55);
+  --shadow: 0 1px 2px rgba(0, 0, 0, .35), 0 12px 32px rgba(0, 0, 0, .45);
+  color-scheme: dark;
+}
+
+/* ---------- base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+html.toc-open { overflow: hidden; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 1rem; line-height: 1.6; overflow-wrap: break-word; }
+[hidden] { display: none !important; }
+img { max-width: 100%; }
+a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: .18em; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 2px solid var(--net); outline-offset: 2px; border-radius: 4px; }
+[id] { scroll-margin-top: calc(var(--safe-top) + var(--bar-h) + 1rem); }
+p { margin: 0; }
+h1, h2, h3, h4, h5 { margin: 0; }
+strong { font-weight: 700; }
+code { font-family: var(--f-mono); font-size: .86em; background: var(--bg); border: 1px solid var(--rule); border-radius: 4px; padding: .02em .3em; overflow-wrap: anywhere; }
+mark { background: var(--hl); color: inherit; border-radius: 2px; padding-inline: .06em; }
+::highlight(hit) { background-color: var(--hl); color: inherit; }
+.vh { position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.lbl, .eyebrow { font-family: var(--f-mono); font-size: .72rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+button { font: inherit; color: inherit; }
+
+.skip { position: absolute; left: 1rem; top: -4rem; z-index: 100; background: var(--ink); color: var(--surface); padding: .55rem .9rem; border-radius: 6px; }
+.skip:focus { top: calc(var(--safe-top) + .5rem); }
+
+/* marks shared by every part of the page */
+.dot { display: inline-block; flex: none; width: .62rem; height: .62rem; border-radius: 50%; background: var(--rule-strong); }
+.dot.critical { background: var(--sos); }
+.dot.major { background: var(--alg); }
+.dot.minor { background: var(--minor); }
+.dot.answer { background: var(--net); }
+.dot.wording { background: var(--learn); }
+.dot.aside { background: var(--rule-strong); }
+.prose .dot { margin-right: .4em; vertical-align: .02em; }
+.warn { display: inline-grid; place-items: center; flex: none; width: 1.05rem; height: 1.05rem; border-radius: 50%; background: var(--alg); color: var(--surface); font-family: var(--f-mono); font-size: .72rem; font-weight: 500; line-height: 1; font-style: normal; }
+.prose .warn { margin-right: .35em; vertical-align: .05em; }
+.ext { display: inline-flex; align-items: center; gap: .35rem; color: var(--alg); font-weight: 600; white-space: nowrap; }
+.meter { display: inline-block; flex: none; width: 4rem; height: .38rem; border-radius: 999px; background: var(--rule); overflow: hidden; }
+.meter i { display: block; height: 100%; border-radius: inherit; background: var(--muted); }
+.linkbtn { background: none; border: 0; padding: .25rem 0; min-height: 2rem; color: var(--net); font-size: .9rem; font-weight: 600; text-decoration: underline; text-underline-offset: .18em; cursor: pointer; }
+.seg { display: inline-flex; justify-self: start; flex-wrap: wrap; gap: 2px; padding: 2px; border: 1px solid var(--rule); border-radius: 9px; background: var(--bg); }
+.seg button { min-height: 2.25rem; padding: .3rem .75rem; border: 0; border-radius: 7px; background: transparent; color: var(--muted); font-size: .86rem; font-weight: 600; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 0 0 1px var(--rule); }
+
+/* ---------- top bar ---------- */
+.bar { position: sticky; top: var(--safe-top); z-index: 40; height: var(--bar-h); display: flex; align-items: center; gap: .75rem; padding-inline: 1rem; background: var(--surface); border-bottom: 1px solid var(--rule); }
+.brand { display: none; flex: none; font-family: var(--f-display); font-stretch: 112%; font-weight: 750; font-size: 1.05rem; text-decoration: none; white-space: nowrap; }
+.menu-btn { display: inline-flex; align-items: center; gap: .45rem; flex: none; min-height: 2.5rem; padding: 0 .8rem; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); font-size: .9rem; font-weight: 600; cursor: pointer; }
+.menu-btn svg { width: 1.05rem; height: 1.05rem; }
+.search { position: relative; flex: 1; min-width: 0; max-width: 36rem; }
+.search input { width: 100%; height: 2.5rem; padding: 0 2.3rem 0 2.25rem; border: 1px solid var(--rule); border-radius: 8px; background: var(--bg); color: var(--ink); font: inherit; font-size: 1rem; }
+.search input::placeholder { color: var(--muted); opacity: 1; }
+.search input:focus { outline: 2px solid var(--net); outline-offset: 0; background: var(--surface); }
+.search-ic { position: absolute; left: .75rem; top: 50%; width: 1rem; height: 1rem; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+.kbd { position: absolute; right: .65rem; top: 50%; transform: translateY(-50%); padding: 0 .35rem; border: 1px solid var(--rule); border-radius: 4px; font-family: var(--f-mono); font-size: .75rem; color: var(--muted); pointer-events: none; }
+.search input:focus ~ .kbd, .search input:not(:placeholder-shown) ~ .kbd { display: none; }
+@media (max-width: 47.99rem), (hover: none) { .kbd { display: none; } }
+@media (min-width: 64rem) {
+  .brand { display: block; width: 15rem; }
+  .menu-btn { display: none; }
+}
+
+/* links between page 1 (the 52 points) and page 2 (the Q&A prep plan) */
+.pagelink { display: inline-flex; align-items: center; gap: .4rem; flex: none; min-height: 2.5rem; margin-left: auto; padding: 0 .85rem; border: 1px solid var(--plan); border-radius: 8px; color: var(--plan); font-size: .9rem; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.pagelink:hover { background: var(--plan-soft); }
+.pagelink svg { width: 1rem; height: 1rem; }
+.pl-short { display: none; }
+@media (max-width: 47.99rem) { .pl-long { display: none; } .pl-short { display: inline; } }
+.plan-banner { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: .5rem 1.2rem; margin-top: 1.2rem; padding: 1rem 1.15rem; border-radius: 12px; background: var(--plan-soft); color: var(--ink); text-decoration: none; }
+.plan-banner .eyebrow { color: var(--plan); }
+.plan-banner .pb-t { display: block; margin-top: .15rem; font-family: var(--f-display); font-stretch: 108%; font-weight: 750; font-size: 1.2rem; line-height: 1.25; }
+.plan-banner .pb-s { display: block; margin-top: .2rem; font-size: .93rem; }
+.plan-banner .go { display: inline-flex; align-items: center; gap: .35rem; color: var(--plan); font-weight: 600; white-space: nowrap; }
+.plan-banner .go svg { width: 1rem; height: 1rem; }
+.plan-banner:hover .pb-t { text-decoration: underline; }
+@media (max-width: 30rem) { .plan-banner { grid-template-columns: minmax(0, 1fr); } }
+.toc-page { margin-top: .8rem; padding-top: .8rem; border-top: 1px solid var(--rule); }
+.toc .toc-page a { color: var(--plan); font-weight: 600; }
+.toc .toc-page small { margin-left: auto; font-family: var(--f-mono); font-size: .72rem; font-weight: 400; letter-spacing: .06em; text-transform: uppercase; }
+
+/* search results */
+.results { position: absolute; top: calc(100% + .45rem); left: 0; z-index: 45; width: min(40rem, calc(100vw - 2rem)); max-height: min(72vh, 36rem); overflow-y: auto; overscroll-behavior: contain; padding: .5rem; background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; box-shadow: var(--shadow); }
+.res-count, .res-none { margin: .3rem .5rem .4rem; font-size: .86rem; color: var(--muted); }
+.res-g { display: flex; gap: .5rem; margin: .8rem .5rem .25rem; }
+.res { display: grid; grid-template-columns: 3.6rem minmax(0, 1fr); column-gap: .6rem; padding: .55rem .5rem; border-radius: 8px; color: var(--ink); text-decoration: none; }
+.res:hover, .res:focus-visible { background: var(--bg); outline-offset: -2px; }
+.res-k { grid-row: span 2; padding-top: .1rem; font-family: var(--f-mono); font-size: .78rem; color: var(--muted); }
+.res-t { font-weight: 600; line-height: 1.35; }
+.res-s { font-size: .84rem; line-height: 1.45; color: var(--muted); }
+@media (max-width: 47.99rem) {
+  .results { position: fixed; top: calc(var(--safe-top) + var(--bar-h)); left: 0; right: 0; width: auto; max-height: calc(100vh - var(--safe-top) - var(--bar-h)); max-height: calc(100dvh - var(--safe-top) - var(--bar-h)); border-inline: 0; border-radius: 0 0 12px 12px; }
+}
+
+/* ---------- shell and contents ---------- */
+.scrim { position: fixed; inset: 0; z-index: 48; background: var(--scrim); }
+.shell { max-width: 78rem; margin-inline: auto; padding-inline: 1rem; display: grid; grid-template-columns: minmax(0, 1fr); column-gap: 3rem; }
+main { min-width: 0; max-width: 50rem; padding-block: 0 6rem; }
+main:focus { outline: none; }
+
+.toc { font-size: .9rem; }
+.toc-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: .4rem; }
+.toc-close { display: none; }
+.toc-view { display: grid; gap: .45rem; margin-bottom: 1.6rem; }
+.toc-list, .toc-list ol { list-style: none; margin: 0; padding: 0; }
+.toc a { display: flex; align-items: baseline; gap: .5rem; padding: .32rem .55rem; border-radius: 6px; color: var(--muted); line-height: 1.35; text-decoration: none; }
+.toc a:hover { color: var(--ink); background: var(--bg); }
+.toc a.is-current { color: var(--ink); font-weight: 600; }
+.toc a[aria-current="location"] { color: var(--ink); background: var(--net-soft); font-weight: 600; }
+.toc a .dot { align-self: center; }
+.toc .count { margin-left: auto; font-family: var(--f-mono); font-size: .75rem; font-weight: 400; color: var(--muted); }
+.toc .sub { margin: .1rem 0 .45rem .95rem; padding-left: .45rem; border-left: 1px solid var(--rule); }
+.toc .sub a { font-size: .84rem; padding-block: .24rem; }
+.toc .sub .k { flex: none; min-width: 1.6rem; font-family: var(--f-mono); font-size: .74rem; }
+@media (min-width: 64rem) {
+  .shell { grid-template-columns: 15rem minmax(0, 1fr); padding-inline: 1.5rem; }
+  .toc { position: sticky; top: calc(var(--safe-top) + var(--bar-h)); align-self: start; max-height: calc(100vh - var(--safe-top) - var(--bar-h)); overflow-y: auto; overscroll-behavior: contain; padding-block: 2rem 2.5rem; scrollbar-width: thin; }
+}
+@media (max-width: 63.99rem) {
+  .toc { position: fixed; z-index: 50; top: 0; bottom: 0; left: 0; width: min(88vw, 22rem); overflow-y: auto; overscroll-behavior: contain; padding: calc(var(--safe-top) + .75rem) 1rem calc(var(--safe-bottom) + 2rem); background: var(--surface); box-shadow: var(--shadow); transform: translateX(-105%); visibility: hidden; transition: transform .22s ease, visibility 0s linear .22s; }
+  .toc-open .toc { transform: none; visibility: visible; transition: transform .22s ease; }
+  .toc-close { display: inline-flex; align-items: center; min-height: 2.5rem; padding: 0 .8rem; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); font-size: .9rem; font-weight: 600; cursor: pointer; }
+  .toc a { padding-block: .5rem; }
+  .toc .sub a { padding-block: .45rem; }
+}
+@media (prefers-reduced-motion: reduce) { .toc { transition: none !important; } }
+
+/* ---------- hero ---------- */
+.hero { display: grid; gap: .9rem; padding-block: 2.5rem 1rem; }
+h1 { font-family: var(--f-display); font-stretch: 116%; font-weight: 800; font-size: clamp(2.1rem, 6.2vw, 3.4rem); line-height: 1.02; letter-spacing: -.01em; text-wrap: balance; }
+.subtitle { font-family: var(--f-display); font-weight: 500; font-size: clamp(1.1rem, 2.4vw, 1.35rem); line-height: 1.3; color: var(--muted); text-wrap: balance; }
+.meta { display: grid; gap: .55rem; margin: .4rem 0 0; max-width: 68ch; font-size: .92rem; }
+.meta div { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: .75rem; }
+.meta dt { padding-top: .2rem; }
+.meta dd { margin: 0; }
+@media (max-width: 30rem) { .meta div { grid-template-columns: minmax(0, 1fr); gap: .1rem; } }
+.split { display: grid; gap: .8rem; margin-top: 1.1rem; }
+.split-bar { display: flex; gap: 3px; height: .6rem; }
+.split-bar i { display: block; border-radius: 3px; }
+.split-bar .answer { background: var(--net); }
+.split-bar .wording { background: var(--learn); }
+.split-bar .aside { background: var(--rule-strong); }
+.split-legend { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem 1rem; }
+.split-legend a { display: grid; grid-template-columns: auto auto minmax(0, 1fr); column-gap: .5rem; align-items: baseline; padding-block: .3rem; text-decoration: none; }
+.split-legend .dot { align-self: center; }
+.sl-n { font-family: var(--f-display); font-stretch: 110%; font-weight: 800; font-size: 1.6rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.sl-t { font-weight: 600; line-height: 1.3; }
+.sl-t small { display: block; font-weight: 400; font-size: .84rem; color: var(--muted); }
+.split-legend a:hover .sl-t { text-decoration: underline; }
+@media (max-width: 40rem) { .split-legend { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- sections and running text ---------- */
+.sec { padding-top: 3.5rem; }
+.sec > h2, .part-head h2 { font-family: var(--f-display); font-stretch: 112%; font-weight: 750; font-size: clamp(1.55rem, 3.6vw, 2.1rem); line-height: 1.1; text-wrap: balance; }
+.sec > h2 { margin-bottom: .9rem; }
+h3 { font-family: var(--f-display); font-stretch: 104%; font-weight: 700; font-size: 1.3rem; line-height: 1.22; text-wrap: balance; }
+.prose > * + * { margin-top: .85rem; }
+.prose p, .prose li { max-width: 68ch; }
+.prose ul, .prose ol { margin-bottom: 0; padding-left: 1.3rem; }
+.prose li + li, .prose li > ul { margin-top: .35rem; }
+.prose li::marker { color: var(--muted); }
+.callout { padding: 1rem 1.15rem; border-radius: 12px; background: var(--alg-soft); }
+.callout > * + * { margin-top: .5rem; }
+.badges.sample { display: inline-flex; padding: .55rem .8rem; border: 1px dashed var(--rule-strong); border-radius: 8px; background: var(--surface); }
+
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; }
+.tile { display: grid; align-content: start; gap: .45rem; padding: 1rem; border: 1px solid var(--rule); border-radius: 12px; background: var(--surface); }
+.tile-k { display: flex; align-items: center; gap: .5rem; font-weight: 700; line-height: 1.3; }
+.tile-n { font-family: var(--f-mono); font-size: .8rem; color: var(--muted); }
+.tile-n b { margin-right: .3rem; font-family: var(--f-display); font-stretch: 110%; font-weight: 800; font-size: 1.9rem; line-height: 1; color: var(--ink); }
+.tile-t { font-size: .93rem; }
+@media (max-width: 48rem) { .tiles { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- index of all 52 ---------- */
+.idx-tools { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; margin-block: 1.4rem .9rem; }
+.ctl { display: grid; gap: .4rem; align-content: start; }
+.chips { display: flex; flex-wrap: wrap; gap: .4rem; }
+.chip { display: inline-flex; align-items: center; gap: .45rem; min-height: 2.25rem; padding: .3rem .75rem; border: 1px solid var(--rule); border-radius: 999px; background: var(--surface); color: var(--ink); font-size: .86rem; cursor: pointer; }
+.chip:hover { border-color: var(--rule-strong); }
+.chip .c { font-family: var(--f-mono); font-size: .75rem; color: var(--muted); }
+.chip[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--surface); }
+.chip[aria-pressed="true"] .c { color: inherit; }
+.chip[aria-pressed="true"] .dot { box-shadow: 0 0 0 2px var(--surface); }
+.idx-status { display: flex; flex-wrap: wrap; align-items: baseline; gap: .4rem 1rem; margin-bottom: .4rem; font-size: .9rem; color: var(--muted); }
+.tbl-wrap { overflow-x: auto; }
+table.idx { width: 100%; border-collapse: collapse; font-size: .94rem; }
+.idx th { padding: .5rem .5rem .45rem; border-bottom: 1px solid var(--rule-strong); text-align: left; white-space: nowrap; font-family: var(--f-mono); font-size: .72rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.idx td { padding: .6rem .5rem; border-bottom: 1px solid var(--rule); vertical-align: baseline; }
+.idx tbody tr:hover { background: var(--surface); }
+.idx .c-id a { font-family: var(--f-mono); font-size: .85rem; white-space: nowrap; text-decoration: none; }
+.idx .c-line a { font-weight: 600; text-decoration: none; }
+.idx .c-line a:hover, .idx .c-id a:hover { text-decoration: underline; }
+.idx .c-pri, .idx .c-hd { white-space: nowrap; }
+.idx .c-pri .dot { margin-right: .4rem; }
+.idx .c-hd { font-family: var(--f-mono); font-size: .86rem; font-variant-numeric: tabular-nums; }
+.idx .c-hd .meter { width: 2.8rem; margin-right: .45rem; vertical-align: .1em; }
+.idx-empty { padding: 1rem 0; color: var(--muted); }
+@media (max-width: 40rem) {
+  .idx thead { display: none; }
+  .idx, .idx tbody { display: block; }
+  .idx tr { display: grid; grid-template-columns: auto auto minmax(0, 1fr); grid-template-areas: "id pri hd" "line line line" "talk talk talk"; align-items: center; gap: .3rem .8rem; padding-block: .75rem; border-bottom: 1px solid var(--rule); }
+  .idx td { display: block; padding: 0; border: 0; }
+  .idx .c-id { grid-area: id; }
+  .idx .c-pri { grid-area: pri; }
+  .idx .c-hd { grid-area: hd; justify-self: end; }
+  .idx .c-line { grid-area: line; }
+  .idx .c-talk { grid-area: talk; }
+}
+
+.tag { display: inline-flex; align-items: center; gap: .4rem; padding: .12rem .6rem; border: 1px solid var(--rule); border-radius: 999px; background: var(--surface); color: var(--ink); font-size: .8rem; line-height: 1.5; text-decoration: none; white-space: nowrap; }
+a.tag:hover { border-color: var(--rule-strong); }
+
+/* ---------- parts ---------- */
+.part-head { display: grid; gap: .7rem; }
+.part-head .eyebrow { display: flex; align-items: center; gap: .5rem; }
+.q, .rule, .grp { display: grid; gap: 1.1rem; padding-top: 2.75rem; }
+.q-head, .rule-head, .grp-head { display: grid; gap: .75rem; }
+.q-head .eyebrow { color: var(--net); }
+.ans { display: grid; gap: .35rem; padding: 1rem 1.15rem; border-radius: 12px; background: var(--net-soft); }
+.ans .lbl { color: var(--net); }
+.ans p + p { font-size: 1.06rem; line-height: 1.55; }
+.note { font-size: .93rem; color: var(--muted); }
+.behind { font-size: .9rem; color: var(--muted); }
+.behind a { font-family: var(--f-mono); font-size: .85rem; }
+.swap { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
+.swap > div { display: grid; align-content: start; gap: .35rem; padding: .9rem 1rem; border-radius: 12px; }
+.avoid { background: var(--sos-soft); }
+.avoid .lbl { color: var(--sos); }
+.say { background: var(--done-soft); }
+.say .lbl { color: var(--done); }
+@media (max-width: 40rem) { .swap { grid-template-columns: minmax(0, 1fr); } }
+.grp-head .note { font-style: normal; }
+.pts { display: grid; gap: 1rem; }
+
+/* ---------- one point ---------- */
+.pt { display: grid; gap: 1rem; min-width: 0; padding: 1.15rem 1.2rem 1.25rem; border: 1px solid var(--rule); border-radius: 12px; background: var(--surface); }
+.pt-h { display: grid; gap: .45rem; }
+.pt-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .4rem .75rem; }
+.pt-id { font-family: var(--f-mono); font-size: .86rem; font-weight: 500; color: var(--muted); text-decoration: none; }
+.pt-id:hover { color: var(--ink); text-decoration: underline; }
+.pt h4 { font-family: var(--f-display); font-weight: 700; font-size: 1.18rem; line-height: 1.25; text-wrap: balance; }
+.badges { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem 1rem; font-size: .84rem; color: var(--muted); }
+.pri { display: inline-flex; align-items: center; gap: .4rem; font-weight: 600; color: var(--ink); }
+.hd { display: inline-flex; align-items: center; gap: .45rem; }
+.hd b { font-family: var(--f-mono); font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; }
+.sec-tag { font-family: var(--f-mono); font-size: .8rem; }
+.pt-explain { display: grid; gap: .9rem; }
+.blk > .lbl + * { margin-top: .35rem; }
+.pairs-h, .pairs li { display: grid; grid-template-columns: 1.5rem minmax(0, 1fr) minmax(0, 1fr); column-gap: 1.1rem; }
+.pairs-h { padding-bottom: .35rem; border-bottom: 1px solid var(--rule-strong); }
+.pairs { list-style: none; margin: 0; padding: 0; }
+.pairs li { padding-block: .75rem; border-bottom: 1px solid var(--rule); }
+.pairs .n { font-family: var(--f-mono); font-weight: 500; color: var(--muted); }
+.pairs .prob, .pairs .why { min-width: 0; }
+.pairs .why .lbl { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 42rem) {
+  .pairs-h { display: none; }
+  .pairs { border-top: 1px solid var(--rule); }
+  .pairs li { grid-template-columns: 1.25rem minmax(0, 1fr); row-gap: .5rem; }
+  .pairs .why { grid-column: 2; padding: .55rem .7rem; border-radius: 8px; background: var(--bg); }
+  .pairs .why .lbl { position: static; display: block; width: auto; height: auto; margin: 0 0 .15rem; overflow: visible; clip: auto; white-space: normal; }
+}
+.impact { display: grid; gap: .35rem; padding: .85rem 1rem; border-radius: 10px; background: var(--bg); }
+.impact > * + * { margin-top: 0; }
+.pt[data-cat="answer"] .impact { background: var(--net-soft); }
+.pt[data-cat="answer"] .impact .lbl { color: var(--net); }
+.pt[data-cat="wording"] .impact { background: var(--learn-soft); }
+.pt[data-cat="wording"] .impact .lbl { color: var(--learn); }
+.backup { display: grid; gap: .3rem; padding: .85rem 1rem; border: 1px dashed var(--rule-strong); border-radius: 10px; }
+.backup .bq { font-style: italic; color: var(--muted); }
+.ext-note { display: flex; align-items: baseline; gap: .5rem; font-size: .9rem; color: var(--alg); }
+.ext-note .warn { transform: translateY(.15em); }
+.pt-more { display: none; justify-self: start; }
+:root[data-view="actions"] .pt:not(.show-all) .pt-explain { display: none; }
+:root[data-view="actions"] .pt-more { display: inline-flex; }
+.flash { outline: 3px solid var(--net); outline-offset: 4px; }
+@media (prefers-reduced-motion: no-preference) {
+  .flash { animation: flash 1.8s ease-out forwards; }
+  @keyframes flash { 0%, 40% { outline-color: var(--net); } 100% { outline-color: transparent; } }
+}
+@media (max-width: 30rem) { .pt { padding: 1rem .95rem 1.1rem; } }
+
+/* ---------- checklist ---------- */
+.ck-progress { display: grid; grid-template-columns: auto minmax(5rem, 1fr) auto; align-items: center; gap: .9rem; max-width: 40rem; margin-top: 1.1rem; }
+.ck-progress p { font-family: var(--f-mono); font-size: .86rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pbar { height: .4rem; border-radius: 999px; background: var(--rule); overflow: hidden; }
+.pbar i { display: block; width: 0; height: 100%; background: var(--done); transition: width .3s ease; }
+@media (prefers-reduced-motion: reduce) { .pbar i { transition: none; } }
+.ck-progress + .note { margin-top: .5rem; }
+.ck-g { display: grid; gap: .6rem; padding-top: 1.6rem; }
+.ck-g h3 { font-size: 1.08rem; }
+.ck { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; }
+.ck li { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; gap: .75rem; padding: .7rem .9rem; border: 1px solid var(--rule); border-radius: 10px; background: var(--surface); }
+.ck input { width: 1.25rem; height: 1.25rem; margin: .18rem 0 0; accent-color: var(--done); cursor: pointer; }
+.ck label { cursor: pointer; }
+.ck li:has(input:checked) { background: var(--done-soft); border-color: transparent; }
+
+/* ---------- what still stands, glossary ---------- */
+.safest { display: grid; border-top: 1px solid var(--rule-strong); }
+.safe-row { display: grid; grid-template-columns: 10rem minmax(0, 1fr); gap: 1rem; padding-block: .75rem; border-bottom: 1px solid var(--rule); }
+.safe-k { font-weight: 700; }
+@media (max-width: 36rem) { .safe-row { grid-template-columns: minmax(0, 1fr); gap: .2rem; } }
+.gloss { margin: 1rem 0 0; border-top: 1px solid var(--rule-strong); }
+.gloss div { display: grid; grid-template-columns: 12.5rem minmax(0, 1fr); gap: 1rem; padding-block: .7rem; border-bottom: 1px solid var(--rule); }
+.gloss dt { font-weight: 700; line-height: 1.45; }
+.gloss dd { margin: 0; }
+@media (max-width: 40rem) { .gloss div { grid-template-columns: minmax(0, 1fr); gap: .15rem; } }
+
+/* ---------- back to top ---------- */
+.totop { position: fixed; right: 1rem; bottom: calc(var(--safe-bottom) + 1rem); z-index: 30; display: inline-flex; align-items: center; gap: .4rem; min-height: 2.75rem; padding: 0 1rem; border-radius: 999px; background: var(--ink); color: var(--surface); font-size: .9rem; font-weight: 600; text-decoration: none; box-shadow: var(--shadow); }
+.totop svg { width: 1rem; height: 1rem; }
+
+@media print {
+  .bar, .toc, .scrim, .totop, .plan-banner, .idx-tools, .idx-status, .seg, .pt-more, .ck-progress, .skip, .results { display: none !important; }
+  .shell { display: block; max-width: none; padding: 0; }
+  main { max-width: none; }
+  :root[data-view="actions"] .pt .pt-explain { display: grid; }
+  .pt, .tile, .ck li, .ans, .swap { break-inside: avoid; }
+}
+/* Page 2 of the red-team guide: the Q&A prep plan.
+   page.css loads first, so the tokens, type, bar and avoid/say boxes are page 1's. What marks this
+   as a separate page: the plum --plan accent, the stripe under the bar and the "Page 2" tag.
+   Layout: one reading column. Each set is an index card, its letter and name on the left and the
+   line to learn on the right; each point is a row with its move on the left and the reason on the right. */
+
+/* ---------- bar ---------- */
+.bar-plan { border-bottom: 3px solid var(--plan); }
+.bar-plan .pagelink { margin-left: 0; }
+.bar-name { display: flex; align-items: center; gap: .55rem; min-width: 0; font-family: var(--f-display); font-stretch: 112%; font-weight: 750; font-size: 1.05rem; white-space: nowrap; }
+.bar-name > span:last-child { overflow: hidden; text-overflow: ellipsis; }
+.pg { flex: none; padding: .12rem .5rem; border-radius: 999px; background: var(--plan); color: var(--surface); font-family: var(--f-mono); font-size: .7rem; font-weight: 500; font-stretch: normal; letter-spacing: .08em; text-transform: uppercase; }
+
+/* ---------- column ---------- */
+main.wrap { max-width: 60rem; margin-inline: auto; padding-inline: 1rem; }
+@media (min-width: 64rem) { main.wrap { padding-inline: 1.5rem; } }
+.wrap a.pref { font-family: var(--f-mono); font-size: .9em; }
+.brace { padding: .05rem .3rem; border: 1px solid var(--rule-strong); border-radius: 6px; background: var(--surface); }
+
+/* ---------- hero ---------- */
+.plan-hero .eyebrow { color: var(--plan); }
+.stats { list-style: none; margin: .7rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .9rem 1.2rem; }
+.stats li { display: grid; align-content: start; gap: .3rem; padding-top: .6rem; border-top: 3px solid var(--plan); }
+.stats b { font-family: var(--f-display); font-stretch: 110%; font-weight: 800; font-size: 2rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.stats span { font-size: .88rem; line-height: 1.35; color: var(--muted); }
+@media (max-width: 40rem) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.jump { display: grid; gap: .45rem; margin-top: 1.2rem; }
+.jump ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .4rem; }
+.jump a { display: inline-flex; align-items: center; min-height: 2.25rem; padding: .25rem .75rem; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); font-size: .86rem; text-decoration: none; }
+.jump a:hover { border-color: var(--plan); color: var(--plan); }
+
+/* ---------- marks ---------- */
+.glyph { display: inline-block; flex: none; width: .72rem; height: .72rem; border: 2px solid var(--ink); border-radius: 50%; }
+.glyph.heart { background: var(--ink); }
+.glyph.line { background: linear-gradient(90deg, var(--ink) 50%, transparent 50%); }
+.glyph.glance { border-color: var(--muted); }
+.chip[aria-pressed="true"] .glyph { border-color: var(--surface); }
+.chip[aria-pressed="true"] .glyph.heart { background: var(--surface); }
+.chip[aria-pressed="true"] .glyph.line { background: linear-gradient(90deg, var(--surface) 50%, transparent 50%); }
+.prep { display: inline-flex; align-items: center; gap: .4rem; font-size: .82rem; font-weight: 600; }
+.sw { display: inline-block; flex: none; width: .72rem; height: .72rem; border-radius: 3px; }
+.sw.keep { background: var(--done); }
+.sw.move { background: var(--alg); }
+.sw.add { background: var(--plan); }
+.sw.fix { background: var(--sos); }
+.chip .lt { font-family: var(--f-display); font-stretch: 110%; font-weight: 800; }
+.chg { display: inline-flex; padding: .06rem .55rem; border-radius: 6px; font-size: .8rem; font-weight: 600; white-space: nowrap; }
+.chg.keep { background: var(--done-soft); color: var(--done); }
+.chg.move { background: var(--alg-soft); color: var(--alg); }
+.chg.add { background: var(--plan-soft); color: var(--plan); }
+.chg.fix { background: var(--sos-soft); color: var(--sos); }
+
+/* ---------- the rule, and the 9 sets ---------- */
+.judge { display: grid; gap: .35rem; padding: 1rem 1.15rem; border-radius: 12px; background: var(--plan-soft); }
+.judge .lbl { color: var(--plan); }
+.practice { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; margin-block: 1.5rem 1rem; }
+.sets { display: grid; gap: .9rem; }
+.set { display: grid; grid-template-columns: minmax(0, 1fr); gap: .85rem; padding: 1.15rem 1.2rem 1.25rem; border: 1px solid var(--rule); border-radius: 12px; background: var(--surface); }
+.set-h { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: .45rem .8rem; }
+.set-l { display: grid; place-items: center; width: 2.6rem; height: 2.6rem; border-radius: 10px; background: var(--plan); color: var(--surface); font-family: var(--f-display); font-stretch: 112%; font-weight: 800; font-size: 1.45rem; line-height: 1; }
+.set-h h3 { font-size: 1.2rem; }
+.set-h .prep { grid-column: 2; }
+@media (min-width: 52rem) {
+  .set { grid-template-columns: 12.5rem minmax(0, 1fr); column-gap: 1.6rem; }
+  .set-h { grid-row: 1 / span 3; grid-template-columns: minmax(0, 1fr); align-content: start; align-items: start; }
+  .set-h .prep { grid-column: 1; }
+  .set > :not(.set-h) { grid-column: 2; }
+}
+.opening { display: grid; gap: .3rem; margin: 0; padding: .85rem 1rem; border-radius: 10px; background: var(--plan-soft); }
+.opening .lbl { color: var(--plan); }
+.opening blockquote { margin: 0; font-size: 1.08rem; line-height: 1.5; }
+.reveal { display: none; justify-self: start; color: var(--plan); }
+:root[data-practice] .set:not(.shown) .opening blockquote { display: none; }
+:root[data-practice] .reveal { display: inline-flex; }
+.set-pts { display: grid; gap: .35rem; }
+.pt-chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .4rem; }
+.pt-chip { display: inline-flex; align-items: baseline; gap: .35rem; padding: .12rem .6rem; border: 1px solid var(--rule); border-radius: 999px; background: var(--surface); font-family: var(--f-mono); font-size: .82rem; text-decoration: none; }
+.pt-chip:hover { border-color: var(--rule-strong); }
+.pt-chip small { font-family: var(--f-body); font-size: .74rem; color: var(--muted); }
+.pt-chip.new { border-color: var(--plan); }
+.pt-chip.new small { color: var(--plan); font-weight: 600; }
+
+/* ---------- every point ---------- */
+.pp { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule-strong); }
+.pp-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: .55rem; padding-block: 1rem; border-bottom: 1px solid var(--rule); }
+@media (min-width: 52rem) { .pp-row { grid-template-columns: 19rem minmax(0, 1fr); column-gap: 1.6rem; } }
+.pp-l { display: grid; align-content: start; gap: .45rem; min-width: 0; }
+.pp-top { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .9rem; font-size: .84rem; color: var(--muted); }
+.pp-id { font-family: var(--f-mono); font-size: .92rem; font-weight: 500; color: var(--ink); }
+.pp-top .pri .dot { margin-right: 0; }
+.pp-top .hd { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.pp-line { font-weight: 600; line-height: 1.35; }
+.pp-move { display: flex; flex-wrap: wrap; align-items: baseline; gap: .3rem .5rem; font-size: .88rem; }
+.pp-move .from { color: var(--muted); }
+.pp-move .to { font-weight: 700; color: var(--plan); }
+.pp-tags { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .9rem; }
+.pp-why { min-width: 0; max-width: 68ch; }
+
+/* ---------- what's wrong, things not to say, advice ---------- */
+.probs { list-style: none; margin: 0; padding: 0; display: grid; gap: .9rem; }
+.prob { display: grid; gap: .75rem; padding: 1.1rem 1.2rem 1.2rem; border: 1px solid var(--rule); border-radius: 12px; background: var(--surface); }
+.prob-h { display: flex; align-items: baseline; gap: .75rem; }
+.prob-n { flex: none; font-family: var(--f-mono); font-size: .86rem; color: var(--muted); }
+.prob-h h3 { font-size: 1.12rem; }
+.prob dl { margin: 0; display: grid; gap: .6rem; }
+.prob dl > div { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); gap: 1rem; }
+.prob dt { padding-top: .22rem; }
+.prob dd { margin: 0; max-width: 68ch; }
+.prob .fix dt { color: var(--plan); }
+.prob .fix dd { font-weight: 600; }
+@media (max-width: 40rem) { .prob dl > div { grid-template-columns: minmax(0, 1fr); gap: .1rem; } }
+.traps { display: grid; gap: 1.6rem; }
+.trap { display: grid; gap: .55rem; }
+.trap-k { font-family: var(--f-mono); font-size: .86rem; color: var(--muted); }
+.advice { margin: 0; padding-left: 1.5rem; display: grid; gap: .9rem; }
+.advice li::marker { font-family: var(--f-mono); color: var(--plan); }
+.advice .adv { font-weight: 600; max-width: 68ch; }
+.advice .note { margin-top: .2rem; max-width: 68ch; }
+
+/* ---------- footer ---------- */
+.plan-foot { display: grid; gap: .5rem; margin-top: 4rem; padding-top: 1.4rem; border-top: 1px solid var(--rule); font-size: .9rem; color: var(--muted); }
+.plan-foot a { color: var(--plan); font-weight: 600; }
+
+@media print {
+  .jump, .practice, .reveal, .idx-tools, .idx-status { display: none !important; }
+  :root[data-practice] .set .opening blockquote { display: block; }
+  .set, .prob, .trap { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the plan</a>
+<header class="bar bar-plan"><a class="pagelink back" href="ABOT-red-team-explained.html"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 10H4M9 5l-5 5 5 5"/></svg><span class="pl-long">The 52 points</span><span class="pl-short">52 points</span></a><p class="bar-name"><span class="pg">Page 2</span><span>Q&amp;A prep plan</span></p></header>
+<main id="main" class="wrap" tabindex="-1"><header class="hero plan-hero" id="top"><p class="eyebrow">IEEE R10-HTC 2026 · Talk prep · Page 2 of 2</p><h1>ABOT Q&amp;A prep plan</h1><p class="subtitle">Your chosen points, reviewed</p><dl class="meta"><div><dt class="lbl">For</dt><dd>presenting <em>ABOT: A Decentralized LoRa Mesh Communication Framework for Post-Disaster Environments</em> at IEEE R10-HTC 2026</dd></div><div><dt class="lbl">Date</dt><dd>2026-10-14</dd></div><div><dt class="lbl">Built from</dt><dd>your list of points to prepare, <code>ABOT-red-team-explained.md</code> and <code>ABOT-red-team-triage.md</code>, checked against the camera-ready paper. The same content is in the "Q&amp;A prep review" sheet of <code>ABOT-red-team.xlsx</code>.</dd></div></dl><ul class="stats"><li><b>9</b><span>sets, down from 17</span></li><li><b>28</b><span>points on your list, plus 8 to add</span></li><li><b>12</b><span>points to know by heart</span></li><li><b>7</b><span>points only to glance at</span></li></ul><nav class="jump" aria-label="On this page"><p class="lbl">On this page</p><ul><li><a href="#in-short">In short</a></li><li><a href="#your-list">Your list</a></li><li><a href="#sets">The 9 sets</a></li><li><a href="#every-point">Every point</a></li><li><a href="#whats-wrong">What's wrong</a></li><li><a href="#not-to-say">Things not to say</a></li><li><a href="#advice">Other advice</a></li><li><a href="#keep">Good choices</a></li></ul></nav></header><section class="sec" id="in-short"><h2>In short</h2><div class="prose"><ul><li><strong>You picked the right points.</strong> All 10 points the triage marked "have an answer ready" are on your list.</li><li><strong>The sets need work.</strong> Some sets share only their ending ("…that's future work"), not their first sentence. Some points that need one answer are spread over different sets. <a class="pref" href="#row-P-01">P-01</a> is listed twice.</li><li><strong>A few likely points are missing.</strong> The biggest gaps are the abstract (<a class="pref" href="#row-P-08">P-08</a>) and the simulator (<a class="pref" href="#row-P-32">P-32</a>, <a class="pref" href="#row-P-17">P-17</a>, <a class="pref" href="#row-P-24">P-24</a>). <a class="pref" href="#row-P-38">P-38</a>, <a class="pref" href="#row-P-14">P-14</a> and <a class="pref" href="#row-P-42">P-42</a> are also worth adding.</li><li><strong>Some points get too much time.</strong> <a class="pref" href="#row-P-16">P-16</a>, <a class="pref" href="#row-P-43">P-43</a>, <a class="pref" href="#row-P-21">P-21</a>, <a class="pref" href="#row-P-31">P-31</a> and <a class="pref" href="#row-P-52">P-52</a> only come up if that detail is on a slide.</li><li><strong>The fix: 9 sets instead of 17.</strong> Learn the 9 opening lines by heart, then one follow-up line for each point.</li></ul></div></section>
+<section class="sec" id="your-list"><h2>Your list</h2><div class="prose"><p>You picked 28 points and grouped them into 17 sets. Points in braces share one explanation; the rest stand alone.</p><ul><li>On their own: <a class="pref" href="#row-P-01">P-01</a>, <a class="pref" href="#row-P-03">P-03</a>, <a class="pref" href="#row-P-04">P-04</a>, <a class="pref" href="#row-P-06">P-06</a>, <a class="pref" href="#row-P-12">P-12</a>, <a class="pref" href="#row-P-15">P-15</a>, <a class="pref" href="#row-P-16">P-16</a>, <a class="pref" href="#row-P-20">P-20</a>, <a class="pref" href="#row-P-22">P-22</a>, <a class="pref" href="#row-P-31">P-31</a>, <a class="pref" href="#row-P-43">P-43</a>, <a class="pref" href="#row-P-52">P-52</a>.</li><li><span class="brace">{<a class="pref" href="#row-P-02">P-02</a>, <a class="pref" href="#row-P-41">P-41</a>}</span></li><li><span class="brace">{<a class="pref" href="#row-P-07">P-07</a>, <a class="pref" href="#row-P-13">P-13</a>}</span></li><li><span class="brace">{<a class="pref" href="#row-P-10">P-10</a>, <a class="pref" href="#row-P-11">P-11</a>}</span></li><li><span class="brace">{<a class="pref" href="#row-P-28">P-28</a>, <a class="pref" href="#row-P-45">P-45</a>, <a class="pref" href="#row-P-21">P-21</a>, <a class="pref" href="#row-P-23">P-23</a>}</span></li><li>The "big set": <span class="brace">{<a class="pref" href="#row-P-05">P-05</a>, <a class="pref" href="#row-P-18">P-18</a>, <a class="pref" href="#row-P-35">P-35</a>, <a class="pref" href="#row-P-30">P-30</a>, <a class="pref" href="#row-P-40">P-40</a>, <a class="pref" href="#row-P-01">P-01</a>, <a class="pref" href="#row-P-25">P-25</a>}</span>. <a class="pref" href="#row-P-01">P-01</a> is also on its own.</li></ul></div></section>
+<section class="sec" id="sets"><h2>The 9 suggested sets</h2><div class="judge"><p class="lbl">How the sets were judged</p><p>Points belong in one set when their answers start with the same sentence. That first sentence is what you say when the question comes. Points that only share the last sentence, such as "…that's future work", are not one set.</p></div><div class="practice"><p class="lbl" id="pr-l">Opening lines</p><div class="seg" role="group" aria-labelledby="pr-l"><button type="button" data-practice-btn="show" aria-pressed="true">Show them</button><button type="button" data-practice-btn="test" aria-pressed="false">Hide them to test yourself</button></div></div><div class="sets"><article class="set" id="set-A"><header class="set-h"><span class="set-l" aria-hidden="true">A</span><h3><span class="vh">Set A: </span>What the main number is</h3><span class="prep"><span class="glyph heart" aria-hidden="true"></span>By heart</span></header><figure class="opening"><figcaption class="lbl">Opening line</figcaption><blockquote><p>“That number is a link-quality score for the nodes along the route, not the share of messages delivered. This paper doesn't measure SOS delivery to a rescuer.”</p></blockquote><button type="button" class="reveal linkbtn" aria-expanded="false">Show the opening line</button></figure><div class="set-pts"><p class="lbl">Points</p><ul class="pt-chips"><li><a class="pt-chip" href="#row-P-01">P-01</a></li><li><a class="pt-chip" href="#row-P-04">P-04</a></li><li><a class="pt-chip" href="#row-P-07">P-07</a></li><li><a class="pt-chip" href="#row-P-22">P-22</a></li><li><a class="pt-chip new" href="#row-P-08">P-08<small>new</small></a></li><li><a class="pt-chip" href="#row-P-31">P-31<small>backup</small></a></li></ul></div><p class="note">Two ways in: "How many SOS messages reach a rescuer?" and "Isn't the planner chasing its own score?" Both end in the same place. If the "+5 per SOS delivered" reward comes up (<a class="pref" href="#row-P-31">P-31</a>), it leads here too: in this version the agent's route doesn't carry the SOS message.</p></article><article class="set" id="set-B"><header class="set-h"><span class="set-l" aria-hidden="true">B</span><h3><span class="vh">Set B: </span>The task is easy</h3><span class="prep"><span class="glyph heart" aria-hidden="true"></span>By heart</span></header><figure class="opening"><figcaption class="lbl">Opening line</figcaption><blockquote><p>“Yes, it's easy. Each node has about 30 neighbours, so most routes are 2–3 hops and every method almost always reaches a safe zone. That's why we compare route length.”</p></blockquote><button type="button" class="reveal linkbtn" aria-expanded="false">Show the opening line</button></figure><div class="set-pts"><p class="lbl">Points</p><ul class="pt-chips"><li><a class="pt-chip" href="#row-P-05">P-05</a></li><li><a class="pt-chip" href="#row-P-13">P-13</a></li><li><a class="pt-chip" href="#row-P-02">P-02</a></li><li><a class="pt-chip" href="#row-P-30">P-30</a></li><li><a class="pt-chip" href="#row-P-35">P-35</a></li><li><a class="pt-chip" href="#row-P-52">P-52</a></li></ul></div><p class="note">Don't call the damage sweep "just a baseline": Section II of the paper claims it as a contribution. Say a harder version is needed (sparser meshes, and hops that can fail on weak links).</p></article><article class="set" id="set-C"><header class="set-h"><span class="set-l" aria-hidden="true">C</span><h3><span class="vh">Set C: </span>What's new</h3><span class="prep"><span class="glyph heart" aria-hidden="true"></span>By heart</span></header><figure class="opening"><figcaption class="lbl">Opening line</figcaption><blockquote><p>“We haven't compared ABOT with decentralised protocols or Meshtastic yet. Routing on link quality is a known idea; what we add is using it in a gateway-free LoRa mesh across five damage levels, with a simulator fast enough for RL.”</p></blockquote><button type="button" class="reveal linkbtn" aria-expanded="false">Show the opening line</button></figure><div class="set-pts"><p class="lbl">Points</p><ul class="pt-chips"><li><a class="pt-chip" href="#row-P-10">P-10</a></li><li><a class="pt-chip" href="#row-P-11">P-11</a></li><li><a class="pt-chip" href="#row-P-25">P-25</a></li><li><a class="pt-chip new" href="#row-P-24">P-24<small>new</small></a></li></ul></div><p class="note">Each part of "what we add" invites a follow-up: [5] already has hardware results (<a class="pref" href="#row-P-25">P-25</a>), the damage levels barely change the results (set <a href="#set-B">B</a>), and the simulator (set <a href="#set-D">D</a>).</p></article><article class="set" id="set-D"><header class="set-h"><span class="set-l" aria-hidden="true">D</span><h3><span class="vh">Set D: </span>The fast simulator</h3><span class="prep"><span class="glyph line" aria-hidden="true"></span>One line</span></header><figure class="opening"><figcaption class="lbl">Opening line</figcaption><blockquote><p>“It's about 4.7× faster than our own reference simulator at the 10×10 grid we used, and up to 7.3× on a small grid. The two agree on which nodes are alive, not on traffic.”</p></blockquote><button type="button" class="reveal linkbtn" aria-expanded="false">Show the opening line</button></figure><div class="set-pts"><p class="lbl">Points</p><ul class="pt-chips"><li><a class="pt-chip new" href="#row-P-32">P-32<small>new</small></a></li><li><a class="pt-chip new" href="#row-P-17">P-17<small>new</small></a></li></ul></div><p class="note">The 4.7× isn't printed in the paper. It comes from the saved benchmark results, so a listener holding the paper only knows 7.3×.</p></article><article class="set" id="set-E"><header class="set-h"><span class="set-l" aria-hidden="true">E</span><h3><span class="vh">Set E: </span>PPO and why RL</h3><span class="prep"><span class="glyph heart" aria-hidden="true"></span>Opening by heart, the rest one line</span></header><figure class="opening"><figcaption class="lbl">Opening line</figcaption><blockquote><p>“The RL part is exploratory. PPO is in the same range as the classical planners, but not better than the fastest ones.”</p></blockquote><button type="button" class="reveal linkbtn" aria-expanded="false">Show the opening line</button></figure><div class="set-pts"><p class="lbl">Points</p><ul class="pt-chips"><li><a class="pt-chip" href="#row-P-12">P-12</a></li><li><a class="pt-chip" href="#row-P-28">P-28</a></li><li><a class="pt-chip" href="#row-P-45">P-45</a></li><li><a class="pt-chip" href="#row-P-23">P-23</a></li><li><a class="pt-chip" href="#row-P-18">P-18</a></li><li><a class="pt-chip new" href="#row-P-14">P-14<small>new</small></a></li><li><a class="pt-chip new" href="#row-P-42">P-42<small>new</small></a></li><li><a class="pt-chip new" href="#row-P-08">P-08<small>new</small></a></li></ul></div><p class="note">The livelock: in one test scenario the agent kept picking a neighbour that had died. Hiding dead neighbours from its choices (action masking) is the standard fix. It's one scenario repeated at five damage levels, not a trend. Don't say "lower bound" or "the 8 slots hold PPO back".</p></article><article class="set" id="set-F"><header class="set-h"><span class="set-l" aria-hidden="true">F</span><h3><span class="vh">Set F: </span>Radio budget</h3><span class="prep"><span class="glyph heart" aria-hidden="true"></span>Opening by heart, the rest one line</span></header><figure class="opening"><figcaption class="lbl">Opening line</figcaption><blockquote><p>“Beacon airtime is a real limit at this density, and the paper lists it. Dense areas would need slower beacons or faster radio settings.”</p></blockquote><button type="button" class="reveal linkbtn" aria-expanded="false">Show the opening line</button></figure><div class="set-pts"><p class="lbl">Points</p><ul class="pt-chips"><li><a class="pt-chip" href="#row-P-06">P-06</a></li><li><a class="pt-chip" href="#row-P-20">P-20</a></li><li><a class="pt-chip" href="#row-P-16">P-16</a></li><li><a class="pt-chip" href="#row-P-43">P-43</a></li><li><a class="pt-chip" href="#row-P-21">P-21</a></li></ul></div><p class="note">Keep the numbers consistent: 4.4% per node assumes a beacon of about 20 bytes. With the paper's 34-byte header it would be about 6.0–6.6%.</p></article><article class="set" id="set-G"><header class="set-h"><span class="set-l" aria-hidden="true">G</span><h3><span class="vh">Set G: </span>How realistic the channel is</h3><span class="prep"><span class="glyph heart" aria-hidden="true"></span>By heart</span></header><figure class="opening"><figcaption class="lbl">Opening line</figcaption><blockquote><p>“The damage levels are relative stress settings. We checked them for internal consistency, not against real radio measurements.”</p></blockquote><button type="button" class="reveal linkbtn" aria-expanded="false">Show the opening line</button></figure><div class="set-pts"><p class="lbl">Points</p><ul class="pt-chips"><li><a class="pt-chip" href="#row-P-15">P-15</a></li><li><a class="pt-chip" href="#row-P-41">P-41</a></li><li><a class="pt-chip new" href="#row-P-27">P-27<small>new, only if needed</small></a></li></ul></div><p class="note">This set also answers "how realistic is the simulator?", one of the most likely questions. At the default damage level, a link delivers half its messages at about 2 km; at severe damage, at about 1 km.</p></article><article class="set" id="set-H"><header class="set-h"><span class="set-l" aria-hidden="true">H</span><h3><span class="vh">Set H: </span>Full view of the network</h3><span class="prep"><span class="glyph heart" aria-hidden="true"></span>By heart</span></header><figure class="opening"><figcaption class="lbl">Opening line</figcaption><blockquote><p>“In the simulation the planners get a full view of the network, as a best case. Sharing that view over the air, and the airtime it costs, isn't modelled yet.”</p></blockquote><button type="button" class="reveal linkbtn" aria-expanded="false">Show the opening line</button></figure><div class="set-pts"><p class="lbl">Points</p><ul class="pt-chips"><li><a class="pt-chip" href="#row-P-03">P-03</a></li></ul></div><p class="note">Keep this consistent with sets <a href="#set-C">C</a> and <a href="#set-E">E</a>: the planners have a full view as a best case, and PPO's inputs include a few whole-network hints.</p></article><article class="set" id="set-I"><header class="set-h"><span class="set-l" aria-hidden="true">I</span><h3><span class="vh">Set I: </span>Mistakes in the paper</h3><span class="prep"><span class="glyph line" aria-hidden="true"></span>One line</span></header><figure class="opening"><figcaption class="lbl">Opening line</figcaption><blockquote><p>“That's a mistake in the paper. Here's the right figure.”</p></blockquote><button type="button" class="reveal linkbtn" aria-expanded="false">Show the opening line</button></figure><div class="set-pts"><p class="lbl">Points</p><ul class="pt-chips"><li><a class="pt-chip" href="#row-P-40">P-40</a></li><li><a class="pt-chip new" href="#row-P-38">P-38<small>new</small></a></li></ul></div><p class="note"><a class="pref" href="#row-P-40">P-40</a>: the main comparison (0.267 vs 0.145) comes from 100 episodes; "250 per level" belongs to the damage sweep. <a class="pref" href="#row-P-38">P-38</a>: "identical on all 100" is about a simulator check (the static planners take the same steps on both simulators), not about the two planners, which take 2.17 vs 3.23 steps.</p></article></div></section>
+<section class="sec" id="every-point"><h2>Every point, one row</h2><div class="prose"><p>The 28 points on your list, plus 8 to add. Each ID opens the full entry on page 1. Filter by the change, by how well to know the point, or by its suggested set.</p></div><div class="idx-tools" id="ppTools"><div class="ctl"><p class="lbl" id="f-chg">Change</p><div class="chips" role="group" aria-labelledby="f-chg"><button type="button" class="chip" data-f="change" data-v="keep" aria-pressed="false"><span class="sw keep" aria-hidden="true"></span>Keep <span class="c">6</span></button><button type="button" class="chip" data-f="change" data-v="move" aria-pressed="false"><span class="sw move" aria-hidden="true"></span>Move <span class="c">21</span></button><button type="button" class="chip" data-f="change" data-v="add" aria-pressed="false"><span class="sw add" aria-hidden="true"></span>Add <span class="c">8</span></button><button type="button" class="chip" data-f="change" data-v="fix" aria-pressed="false"><span class="sw fix" aria-hidden="true"></span>Fix duplicate <span class="c">1</span></button></div></div><div class="ctl"><p class="lbl" id="f-prep">How well to know it</p><div class="chips" role="group" aria-labelledby="f-prep"><button type="button" class="chip" data-f="prep" data-v="heart" aria-pressed="false"><span class="glyph heart" aria-hidden="true"></span>By heart <span class="c">12</span></button><button type="button" class="chip" data-f="prep" data-v="line" aria-pressed="false"><span class="glyph line" aria-hidden="true"></span>One line <span class="c">17</span></button><button type="button" class="chip" data-f="prep" data-v="glance" aria-pressed="false"><span class="glyph glance" aria-hidden="true"></span>Glance <span class="c">7</span></button></div></div><div class="ctl"><p class="lbl" id="f-set">Suggested set</p><div class="chips" role="group" aria-labelledby="f-set"><button type="button" class="chip" data-f="set" data-v="A" aria-pressed="false"><span class="lt">A</span> <span class="c">6</span></button><button type="button" class="chip" data-f="set" data-v="B" aria-pressed="false"><span class="lt">B</span> <span class="c">6</span></button><button type="button" class="chip" data-f="set" data-v="C" aria-pressed="false"><span class="lt">C</span> <span class="c">4</span></button><button type="button" class="chip" data-f="set" data-v="D" aria-pressed="false"><span class="lt">D</span> <span class="c">2</span></button><button type="button" class="chip" data-f="set" data-v="E" aria-pressed="false"><span class="lt">E</span> <span class="c">8</span></button><button type="button" class="chip" data-f="set" data-v="F" aria-pressed="false"><span class="lt">F</span> <span class="c">5</span></button><button type="button" class="chip" data-f="set" data-v="G" aria-pressed="false"><span class="lt">G</span> <span class="c">3</span></button><button type="button" class="chip" data-f="set" data-v="H" aria-pressed="false"><span class="lt">H</span> <span class="c">1</span></button><button type="button" class="chip" data-f="set" data-v="I" aria-pressed="false"><span class="lt">I</span> <span class="c">2</span></button></div></div></div><p class="idx-status"><span id="ppCount" aria-live="polite">Showing all points</span><button type="button" class="linkbtn" id="ppClear" hidden>Clear filters</button></p><ol class="pp" id="pp" role="list"><li class="pp-row" id="row-P-01" data-change="fix" data-prep="heart" data-set="A"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-01" title="Open the full entry on page 1">P-01</a><span class="pri"><span class="dot critical" aria-hidden="true"></span>Critical</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:85%"></i></span>85</span></p><p class="pp-line">The paper never measures whether an SOS reaches a rescuer</p><p class="pp-move"><span class="from">Your set: Own + big set</span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-A">Set A</a></span></p><p class="pp-tags"><span class="chg fix">Fix duplicate</span><span class="prep"><span class="glyph heart" aria-hidden="true"></span>By heart</span></p></div><p class="pp-why">It's on your list twice. Give it one home, with <a class="pref" href="#row-P-04">P-04</a>, <a class="pref" href="#row-P-07">P-07</a> and <a class="pref" href="#row-P-22">P-22</a>: they all come down to what the main number does and doesn't measure.</p></li><li class="pp-row" id="row-P-02" data-change="move" data-prep="line" data-set="B"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-02" title="Open the full entry on page 1">P-02</a><span class="pri"><span class="dot critical" aria-hidden="true"></span>Critical</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:85%"></i></span>85</span></p><p class="pp-line">Episodes last seconds, not a 33-minute window</p><p class="pp-move"><span class="from">Your set: <span class="brace">{<a class="pref" href="#row-P-02">P-02</a>, <a class="pref" href="#row-P-41">P-41</a>}</span></span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-B">Set B</a></span></p><p class="pp-tags"><span class="chg move">Move</span><span class="prep"><span class="glyph line" aria-hidden="true"></span>One line</span></p></div><p class="pp-why">More than a wording fix. Episodes last tens of seconds, so failures, battery drain and the 25-minute link window barely act. The follow-up ("so what does your damage model test?") is set <a href="#set-B">B</a>'s question.</p></li><li class="pp-row" id="row-P-03" data-change="keep" data-prep="heart" data-set="H"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-03" title="Open the full entry on page 1">P-03</a><span class="pri"><span class="dot critical" aria-hidden="true"></span>Critical</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:85%"></i></span>85</span></p><p class="pp-line">The planner needs a full map the protocol never builds</p><p class="pp-move"><span class="from">Your set: Own</span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-H">Set H</a></span></p><p class="pp-tags"><span class="chg keep">Keep</span><span class="prep"><span class="glyph heart" aria-hidden="true"></span>By heart</span></p></div><p class="pp-why">A question of its own: how does a node know the whole network? Keep the answer consistent with <a class="pref" href="#row-P-10">P-10</a> and <a class="pref" href="#row-P-12">P-12</a>.</p></li><li class="pp-row" id="row-P-04" data-change="move" data-prep="heart" data-set="A"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-04" title="Open the full entry on page 1">P-04</a><span class="pri"><span class="dot critical" aria-hidden="true"></span>Critical</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:82%"></i></span>82</span></p><p class="pp-line">The link scores can't be per-hop delivery chances</p><p class="pp-move"><span class="from">Your set: Own</span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-A">Set A</a></span></p><p class="pp-tags"><span class="chg move">Move</span><span class="prep"><span class="glyph heart" aria-hidden="true"></span>By heart</span></p></div><p class="pp-why">Same answer as <a class="pref" href="#row-P-07">P-07</a> and <a class="pref" href="#row-P-22">P-22</a>: 0.267 and 0.145 are link-quality scores, not delivery chances. Answering them separately risks three different definitions of one number.</p></li><li class="pp-row" id="row-P-05" data-change="move" data-prep="heart" data-set="B"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-05" title="Open the full entry on page 1">P-05</a><span class="pri"><span class="dot critical" aria-hidden="true"></span>Critical</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:80%"></i></span>80</span></p><p class="pp-line">Every method succeeds, so the test can't show robustness</p><p class="pp-move"><span class="from">Your set: Big set</span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-B">Set B</a></span></p><p class="pp-tags"><span class="chg move">Move</span><span class="prep"><span class="glyph heart" aria-hidden="true"></span>By heart</span></p></div><p class="pp-why">Its answer starts with "yes, the task is easy", not "future work". Don't call the damage sweep "just a baseline": the paper claims it as a contribution.</p></li><li class="pp-row" id="row-P-06" data-change="move" data-prep="heart" data-set="F"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-06" title="Open the full entry on page 1">P-06</a><span class="pri"><span class="dot critical" aria-hidden="true"></span>Critical</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:80%"></i></span>80</span></p><p class="pp-line">Beacons alone would saturate the radio channel at this density</p><p class="pp-move"><span class="from">Your set: Own</span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-F">Set F</a></span></p><p class="pp-tags"><span class="chg move">Move</span><span class="prep"><span class="glyph heart" aria-hidden="true"></span>By heart</span></p></div><p class="pp-why">Same story as <a class="pref" href="#row-P-20">P-20</a>: beacon airtime is high for each node, and the ~30 neighbours around each receiver add up. One answer for both keeps the numbers consistent.</p></li><li class="pp-row" id="row-P-07" data-change="move" data-prep="heart" data-set="A"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-07" title="Open the full entry on page 1">P-07</a><span class="pri"><span class="dot critical" aria-hidden="true"></span>Critical</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:75%"></i></span>75</span></p><p class="pp-line">The winning planner is graded on the score it chases</p><p class="pp-move"><span class="from">Your set: <span class="brace">{<a class="pref" href="#row-P-07">P-07</a>, <a class="pref" href="#row-P-13">P-13</a>}</span></span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-A">Set A</a></span></p><p class="pp-tags"><span class="chg move">Move</span><span class="prep"><span class="glyph heart" aria-hidden="true"></span>By heart</span></p></div><p class="pp-why">Same number as <a class="pref" href="#row-P-04">P-04</a> and <a class="pref" href="#row-P-22">P-22</a>. Admit it: the planner picks routes using the same score it's measured on, so we only claim it changes which routes get picked. "It's a proof of concept" or "hardware will tell" doesn't fix this.</p></li><li class="pp-row" id="row-P-08" data-change="add" data-prep="heart" data-set="A E"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-08" title="Open the full entry on page 1">P-08</a><span class="pri"><span class="dot major" aria-hidden="true"></span>Major</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:80%"></i></span>80</span></p><p class="pp-line">The abstract's damage claims contradict the paper's own results</p><p class="pp-move"><span class="from">Your set: Not on your list</span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-A">Set A</a> + <a href="#set-E">Set E</a></span></p><p class="pp-tags"><span class="chg add">Add</span><span class="prep"><span class="glyph heart" aria-hidden="true"></span>By heart</span></p></div><p class="pp-why">The abstract is the most-read part of the paper. It claims "improved packet delivery" (not measured) and "limitations of RL-based routing under extreme network collapse" (PPO's one failure happens at every damage level, even intact). A session chair may ask about it.</p></li><li class="pp-row" id="row-P-10" data-change="keep" data-prep="heart" data-set="C"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-10" title="Open the full entry on page 1">P-10</a><span class="pri"><span class="dot major" aria-hidden="true"></span>Major</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:78%"></i></span>78</span></p><p class="pp-line">None of the baselines is a decentralised protocol</p><p class="pp-move"><span class="from">Your set: <span class="brace">{<a class="pref" href="#row-P-10">P-10</a>, <a class="pref" href="#row-P-11">P-11</a>}</span></span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-C">Set C</a></span></p><p class="pp-tags"><span class="chg keep">Keep</span><span class="prep"><span class="glyph heart" aria-hidden="true"></span>By heart</span></p></div><p class="pp-why">Good pair. Add <a class="pref" href="#row-P-25">P-25</a> and <a class="pref" href="#row-P-24">P-24</a>: all four are "how does this compare, and what's new?"</p></li><li class="pp-row" id="row-P-11" data-change="keep" data-prep="heart" data-set="C"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-11" title="Open the full entry on page 1">P-11</a><span class="pri"><span class="dot major" aria-hidden="true"></span>Major</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:75%"></i></span>75</span></p><p class="pp-line">Live link-quality routing already exists in mesh protocols</p><p class="pp-move"><span class="from">Your set: <span class="brace">{<a class="pref" href="#row-P-10">P-10</a>, <a class="pref" href="#row-P-11">P-11</a>}</span></span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-C">Set C</a></span></p><p class="pp-tags"><span class="chg keep">Keep</span><span class="prep"><span class="glyph heart" aria-hidden="true"></span>By heart</span></p></div><p class="pp-why">Good pair. Don't claim the metric is new; claim where you use it.</p></li><li class="pp-row" id="row-P-12" data-change="move" data-prep="line" data-set="E"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-12" title="Open the full entry on page 1">P-12</a><span class="pri"><span class="dot major" aria-hidden="true"></span>Major</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:75%"></i></span>75</span></p><p class="pp-line">PPO's 'local only' view includes whole-network information</p><p class="pp-move"><span class="from">Your set: Own</span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-E">Set E</a></span></p><p class="pp-tags"><span class="chg move">Move</span><span class="prep"><span class="glyph line" aria-hidden="true"></span>One line</span></p></div><p class="pp-why">It's the trap inside "why RL?". Don't excuse PPO with "it only sees local information": the paper's own input list includes whole-network hints. Keep it consistent with the livelock answer: no "lower bound".</p></li><li class="pp-row" id="row-P-13" data-change="move" data-prep="line" data-set="B"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-13" title="Open the full entry on page 1">P-13</a><span class="pri"><span class="dot major" aria-hidden="true"></span>Major</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:75%"></i></span>75</span></p><p class="pp-line">Claim that damage removes long-range shortcuts is not shown</p><p class="pp-move"><span class="from">Your set: <span class="brace">{<a class="pref" href="#row-P-07">P-07</a>, <a class="pref" href="#row-P-13">P-13</a>}</span></span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-B">Set B</a></span></p><p class="pp-tags"><span class="chg move">Move</span><span class="prep"><span class="glyph line" aria-hidden="true"></span>One line</span></p></div><p class="pp-why">Its answer is <a class="pref" href="#row-P-05">P-05</a>'s: every method almost always succeeds, so damage doesn't reach the routing task yet. If you paired it with <a class="pref" href="#row-P-07">P-07</a> because they share a fix, that fix also covers <a class="pref" href="#row-P-01">P-01</a>, <a class="pref" href="#row-P-04">P-04</a> and <a class="pref" href="#row-P-05">P-05</a>.</p></li><li class="pp-row" id="row-P-14" data-change="add" data-prep="line" data-set="E"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-14" title="Open the full entry on page 1">P-14</a><span class="pri"><span class="dot major" aria-hidden="true"></span>Major</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:72%"></i></span>72</span></p><p class="pp-line">The paper doesn't say which trained model its results use</p><p class="pp-move"><span class="from">Your set: Not on your list</span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-E">Set E</a></span></p><p class="pp-tags"><span class="chg add">Add</span><span class="prep"><span class="glyph line" aria-hidden="true"></span>One line</span></p></div><p class="pp-why">Section VI prints the scores of all three trained models (−0.67, 0.18, 0.71), so "which model did you test?" can be asked from the paper. The true answer is seed 0, the −0.67 one, so have a follow-up ready. A better use of time than <a class="pref" href="#row-P-31">P-31</a> or <a class="pref" href="#row-P-52">P-52</a>.</p></li><li class="pp-row" id="row-P-15" data-change="move" data-prep="heart" data-set="G"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-15" title="Open the full entry on page 1">P-15</a><span class="pri"><span class="dot major" aria-hidden="true"></span>Major</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:72%"></i></span>72</span></p><p class="pp-line">The channel model's distances and damage presets look miscalibrated</p><p class="pp-move"><span class="from">Your set: Own</span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-G">Set G</a></span></p><p class="pp-tags"><span class="chg move">Move</span><span class="prep"><span class="glyph heart" aria-hidden="true"></span>By heart</span></p></div><p class="pp-why">Pair it with <a class="pref" href="#row-P-41">P-41</a>: both are range numbers from Fig. 2. It's also the "how realistic is the simulator?" question, which is very likely.</p></li><li class="pp-row" id="row-P-16" data-change="move" data-prep="glance" data-set="F"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-16" title="Open the full entry on page 1">P-16</a><span class="pri"><span class="dot major" aria-hidden="true"></span>Major</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:70%"></i></span>70</span></p><p class="pp-line">The packet sizes don't add up</p><p class="pp-move"><span class="from">Your set: Own</span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-F">Set F</a></span></p><p class="pp-tags"><span class="chg move">Move</span><span class="prep"><span class="glyph glance" aria-hidden="true"></span>Glance</span></p></div><p class="pp-why">Part of the radio budget. Only comes up if packet sizes are on a slide. Don't claim the real header is "compact": no specification exists.</p></li><li class="pp-row" id="row-P-17" data-change="add" data-prep="line" data-set="D"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-17" title="Open the full entry on page 1">P-17</a><span class="pri"><span class="dot major" aria-hidden="true"></span>Major</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:70%"></i></span>70</span></p><p class="pp-line">The simulator match on alive nodes is nearly guaranteed</p><p class="pp-move"><span class="from">Your set: Not on your list</span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-D">Set D</a></span></p><p class="pp-tags"><span class="chg add">Add</span><span class="prep"><span class="glyph line" aria-hidden="true"></span>One line</span></p></div><p class="pp-why">If you call the fast simulator "validated", expect "validated on what?". The paper itself says the two simulators agree on which nodes are alive, not on traffic.</p></li><li class="pp-row" id="row-P-18" data-change="move" data-prep="line" data-set="E"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-18" title="Open the full entry on page 1">P-18</a><span class="pri"><span class="dot major" aria-hidden="true"></span>Major</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:70%"></i></span>70</span></p><p class="pp-line">The gossip test was bound to find no difference</p><p class="pp-move"><span class="from">Your set: Big set</span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-E">Set E</a></span></p><p class="pp-tags"><span class="chg move">Move</span><span class="prep"><span class="glyph line" aria-hidden="true"></span>One line</span></p></div><p class="pp-why">Its answer starts with "gossip made no difference; its merge step isn't connected", not "future work". Don't repeat the paper's line that the gossip arm "pays gossip's airtime": no gossip was sent during evaluation.</p></li><li class="pp-row" id="row-P-20" data-change="move" data-prep="line" data-set="F"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-20" title="Open the full entry on page 1">P-20</a><span class="pri"><span class="dot major" aria-hidden="true"></span>Major</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:68%"></i></span>68</span></p><p class="pp-line">The airtime figure is miscalculated and cites the wrong rule</p><p class="pp-move"><span class="from">Your set: Own</span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-F">Set F</a></span></p><p class="pp-tags"><span class="chg move">Move</span><span class="prep"><span class="glyph line" aria-hidden="true"></span>One line</span></p></div><p class="pp-why">Same answer as <a class="pref" href="#row-P-06">P-06</a>. Don't say India has no duty-cycle limit, because that isn't verified. "ETSI is a European rule; airtime is the real limit either way" is enough.</p></li><li class="pp-row" id="row-P-21" data-change="move" data-prep="glance" data-set="F"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-21" title="Open the full entry on page 1">P-21</a><span class="pri"><span class="dot major" aria-hidden="true"></span>Major</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:68%"></i></span>68</span></p><p class="pp-line">The channel model assumes timing the design doesn't describe</p><p class="pp-move"><span class="from">Your set: <span class="brace">{<a class="pref" href="#row-P-28">P-28</a>, <a class="pref" href="#row-P-45">P-45</a>, <a class="pref" href="#row-P-21">P-21</a>, <a class="pref" href="#row-P-23">P-23</a>}</span></span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-F">Set F</a></span></p><p class="pp-tags"><span class="chg move">Move</span><span class="prep"><span class="glyph glance" aria-hidden="true"></span>Glance</span></p></div><p class="pp-why">It's about how nodes share the channel (slotted ALOHA needs a shared clock), not about PPO. Answer: it's a simplified collision model for the simulation, not a design for real radios.</p></li><li class="pp-row" id="row-P-22" data-change="move" data-prep="heart" data-set="A"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-22" title="Open the full entry on page 1">P-22</a><span class="pri"><span class="dot major" aria-hidden="true"></span>Major</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:65%"></i></span>65</span></p><p class="pp-line">The paper uses PDR for three different quantities</p><p class="pp-move"><span class="from">Your set: Own</span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-A">Set A</a></span></p><p class="pp-tags"><span class="chg move">Move</span><span class="prep"><span class="glyph heart" aria-hidden="true"></span>By heart</span></p></div><p class="pp-why">Same answer as <a class="pref" href="#row-P-04">P-04</a> and <a class="pref" href="#row-P-07">P-07</a>. Label every PDR on your slides with what it measures.</p></li><li class="pp-row" id="row-P-23" data-change="keep" data-prep="line" data-set="E"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-23" title="Open the full entry on page 1">P-23</a><span class="pri"><span class="dot major" aria-hidden="true"></span>Major</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:65%"></i></span>65</span></p><p class="pp-line">The livelock claim rests on one repeated scenario</p><p class="pp-move"><span class="from">Your set: <span class="brace">{<a class="pref" href="#row-P-28">P-28</a>, <a class="pref" href="#row-P-45">P-45</a>, <a class="pref" href="#row-P-21">P-21</a>, <a class="pref" href="#row-P-23">P-23</a>}</span></span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-E">Set E</a></span></p><p class="pp-tags"><span class="chg keep">Keep</span><span class="prep"><span class="glyph line" aria-hidden="true"></span>One line</span></p></div><p class="pp-why">Good: part of the livelock set. It's one scenario repeated at five damage levels, reported for transparency.</p></li><li class="pp-row" id="row-P-24" data-change="add" data-prep="line" data-set="C"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-24" title="Open the full entry on page 1">P-24</a><span class="pri"><span class="dot major" aria-hidden="true"></span>Major</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:65%"></i></span>65</span></p><p class="pp-line">Existing tools contradict the claimed research gap</p><p class="pp-move"><span class="from">Your set: Not on your list</span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-C">Set C</a></span></p><p class="pp-tags"><span class="chg add">Add</span><span class="prep"><span class="glyph line" aria-hidden="true"></span>One line</span></p></div><p class="pp-why">Your "what's new" answer leans on a simulator fast enough for RL. The paper says LoRa simulators lack that, but tools such as ns3-gym exist (an outside fact: check it before quoting). Say ABOT offers a fast, mesh-specific environment, not the only one.</p></li><li class="pp-row" id="row-P-25" data-change="move" data-prep="heart" data-set="C"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-25" title="Open the full entry on page 1">P-25</a><span class="pri"><span class="dot major" aria-hidden="true"></span>Major</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:62%"></i></span>62</span></p><p class="pp-line">The closest prior work already has hardware results</p><p class="pp-move"><span class="from">Your set: Big set</span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-C">Set C</a></span></p><p class="pp-tags"><span class="chg move">Move</span><span class="prep"><span class="glyph heart" aria-hidden="true"></span>By heart</span></p></div><p class="pp-why">The question is "[5] already has hardware, so what do you add?". "Hardware is next" doesn't answer it. Lead with what's new, then admit [5] has hardware results and ABOT doesn't yet.</p></li><li class="pp-row" id="row-P-27" data-change="add" data-prep="glance" data-set="G"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-27" title="Open the full entry on page 1">P-27</a><span class="pri"><span class="dot major" aria-hidden="true"></span>Major</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:60%"></i></span>60</span></p><p class="pp-line">The channel model cites a source for a different radio</p><p class="pp-move"><span class="from">Your set: Not on your list</span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-G">Set G</a></span></p><p class="pp-tags"><span class="chg add">Add</span><span class="prep"><span class="glyph glance" aria-hidden="true"></span>Glance</span></p></div><p class="pp-why">Only if a slide names where the path-loss numbers come from. The cited source [10] is a model for a different kind of radio (UWB).</p></li><li class="pp-row" id="row-P-28" data-change="keep" data-prep="line" data-set="E"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-28" title="Open the full entry on page 1">P-28</a><span class="pri"><span class="dot major" aria-hidden="true"></span>Major</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:60%"></i></span>60</span></p><p class="pp-line">PPO's eight choices depend on how the nodes are numbered</p><p class="pp-move"><span class="from">Your set: <span class="brace">{<a class="pref" href="#row-P-28">P-28</a>, <a class="pref" href="#row-P-45">P-45</a>, <a class="pref" href="#row-P-21">P-21</a>, <a class="pref" href="#row-P-23">P-23</a>}</span></span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-E">Set E</a></span></p><p class="pp-tags"><span class="chg keep">Keep</span><span class="prep"><span class="glyph line" aria-hidden="true"></span>One line</span></p></div><p class="pp-why">Good. Say the fixed list of 8 was a simplification and masking is the fix. Don't say the 8 slots hold PPO back: in the tested scenarios they always include a best next hop.</p></li><li class="pp-row" id="row-P-30" data-change="move" data-prep="line" data-set="B"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-30" title="Open the full entry on page 1">P-30</a><span class="pri"><span class="dot major" aria-hidden="true"></span>Major</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:55%"></i></span>55</span></p><p class="pp-line">Clustered failures are motivated but never tested</p><p class="pp-move"><span class="from">Your set: Big set</span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-B">Set B</a></span></p><p class="pp-tags"><span class="chg move">Move</span><span class="prep"><span class="glyph line" aria-hidden="true"></span>One line</span></p></div><p class="pp-why">Clustered failures were never tested. It will most likely come up inside "why RL?", because the paper's reason for RL is clustered failures (see <a class="pref" href="#row-P-42">P-42</a>).</p></li><li class="pp-row" id="row-P-31" data-change="move" data-prep="glance" data-set="A"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-31" title="Open the full entry on page 1">P-31</a><span class="pri"><span class="dot major" aria-hidden="true"></span>Major</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:55%"></i></span>55</span></p><p class="pp-line">The +5 reward pays for traffic the agent doesn't control</p><p class="pp-move"><span class="from">Your set: Own</span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-A">Set A</a></span></p><p class="pp-tags"><span class="chg move">Move</span><span class="prep"><span class="glyph glance" aria-hidden="true"></span>Glance</span></p></div><p class="pp-why">Only comes up if the reward table is on a slide. If it does, it leads to set <a href="#set-A">A</a>: in this version the agent's route doesn't carry the SOS message.</p></li><li class="pp-row" id="row-P-32" data-change="add" data-prep="line" data-set="D"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-32" title="Open the full entry on page 1">P-32</a><span class="pri"><span class="dot major" aria-hidden="true"></span>Major</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:55%"></i></span>55</span></p><p class="pp-line">The speed-up headline hides its grid size and mode</p><p class="pp-move"><span class="from">Your set: Not on your list</span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-D">Set D</a></span></p><p class="pp-tags"><span class="chg add">Add</span><span class="prep"><span class="glyph line" aria-hidden="true"></span>One line</span></p></div><p class="pp-why">"Up to 7.3×" gives no grid size, so "at what size?" is a natural question. It's 4.7× at the 10×10 grid you used.</p></li><li class="pp-row" id="row-P-35" data-change="move" data-prep="glance" data-set="B"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-35" title="Open the full entry on page 1">P-35</a><span class="pri"><span class="dot major" aria-hidden="true"></span>Major</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:50%"></i></span>50</span></p><p class="pp-line">Nodes are assumed static, yet the paper mentions movement</p><p class="pp-move"><span class="from">Your set: Big set</span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-B">Set B</a></span></p><p class="pp-tags"><span class="chg move">Move</span><span class="prep"><span class="glyph glance" aria-hidden="true"></span>Glance</span></p></div><p class="pp-why">One line is enough: the nodes are static in this study. Don't say nodes move.</p></li><li class="pp-row" id="row-P-38" data-change="add" data-prep="line" data-set="I"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-38" title="Open the full entry on page 1">P-38</a><span class="pri"><span class="dot minor" aria-hidden="true"></span>Minor</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:85%"></i></span>85</span></p><p class="pp-line">'Identical on all 100' wrongly suggests the planners tie</p><p class="pp-move"><span class="from">Your set: Not on your list</span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-I">Set I</a></span></p><p class="pp-tags"><span class="chg add">Add</span><span class="prep"><span class="glyph line" aria-hidden="true"></span>One line</span></p></div><p class="pp-why">If you keep <a class="pref" href="#row-P-40">P-40</a>, keep <a class="pref" href="#row-P-38">P-38</a>: they're back-to-back sentences in the paragraph that holds your main result. <a class="pref" href="#row-P-38">P-38</a> is harder to defend (85 vs 75).</p></li><li class="pp-row" id="row-P-40" data-change="move" data-prep="line" data-set="I"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-40" title="Open the full entry on page 1">P-40</a><span class="pri"><span class="dot minor" aria-hidden="true"></span>Minor</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:75%"></i></span>75</span></p><p class="pp-line">The 250-episode count is attached to the wrong comparison</p><p class="pp-move"><span class="from">Your set: Big set</span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-I">Set I</a></span></p><p class="pp-tags"><span class="chg move">Move</span><span class="prep"><span class="glyph line" aria-hidden="true"></span>One line</span></p></div><p class="pp-why">It's a mistake in the paper, not untested work. The 0.267 vs 0.145 result comes from the 100-episode main run; "250 per level" belongs to the damage sweep. Answering "future work" would sound wrong.</p></li><li class="pp-row" id="row-P-41" data-change="move" data-prep="line" data-set="G"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-41" title="Open the full entry on page 1">P-41</a><span class="pri"><span class="dot minor" aria-hidden="true"></span>Minor</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:60%"></i></span>60</span></p><p class="pp-line">The multi-kilometre range holds only at milder damage levels</p><p class="pp-move"><span class="from">Your set: <span class="brace">{<a class="pref" href="#row-P-02">P-02</a>, <a class="pref" href="#row-P-41">P-41</a>}</span></span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-G">Set G</a></span></p><p class="pp-tags"><span class="chg move">Move</span><span class="prep"><span class="glyph line" aria-hidden="true"></span>One line</span></p></div><p class="pp-why">Pairs with <a class="pref" href="#row-P-15">P-15</a>: both are range numbers from Fig. 2. Say "about 2 km at the default damage level".</p></li><li class="pp-row" id="row-P-42" data-change="add" data-prep="line" data-set="E"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-42" title="Open the full entry on page 1">P-42</a><span class="pri"><span class="dot minor" aria-hidden="true"></span>Minor</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:55%"></i></span>55</span></p><p class="pp-line">Replacing the planner is an aim, not a result</p><p class="pp-move"><span class="from">Your set: Not on your list</span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-E">Set E</a></span></p><p class="pp-tags"><span class="chg add">Add</span><span class="prep"><span class="glyph line" aria-hidden="true"></span>One line</span></p></div><p class="pp-why">Section I gives the reason for RL in one sentence: replace Dijkstra, and handle clustered failures better. Neither was shown. Expect it inside "why RL?".</p></li><li class="pp-row" id="row-P-43" data-change="move" data-prep="glance" data-set="F"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-43" title="Open the full entry on page 1">P-43</a><span class="pri"><span class="dot minor" aria-hidden="true"></span>Minor</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:50%"></i></span>50</span></p><p class="pp-line">The 51-byte size limit is borrowed from LoRaWAN</p><p class="pp-move"><span class="from">Your set: Own</span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-F">Set F</a></span></p><p class="pp-tags"><span class="chg move">Move</span><span class="prep"><span class="glyph glance" aria-hidden="true"></span>Glance</span></p></div><p class="pp-why">Part of the radio budget. Only comes up if the 51-byte limit is on a slide. Answer: it's a cautious size limit that also suits LoRaWAN radios.</p></li><li class="pp-row" id="row-P-45" data-change="keep" data-prep="line" data-set="E"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-45" title="Open the full entry on page 1">P-45</a><span class="pri"><span class="dot minor" aria-hidden="true"></span>Minor</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:45%"></i></span>45</span></p><p class="pp-line">The livelock may be blamed on the wrong cause</p><p class="pp-move"><span class="from">Your set: <span class="brace">{<a class="pref" href="#row-P-28">P-28</a>, <a class="pref" href="#row-P-45">P-45</a>, <a class="pref" href="#row-P-21">P-21</a>, <a class="pref" href="#row-P-23">P-23</a>}</span></span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-E">Set E</a></span></p><p class="pp-tags"><span class="chg keep">Keep</span><span class="prep"><span class="glyph line" aria-hidden="true"></span>One line</span></p></div><p class="pp-why">Good. Blame "dead neighbours stay pickable", not "only 8 slots". Section VI of the paper already says dead neighbours stay addressable.</p></li><li class="pp-row" id="row-P-52" data-change="move" data-prep="glance" data-set="B"><div class="pp-l"><p class="pp-top"><a class="pp-id" href="ABOT-red-team-explained.html#P-52" title="Open the full entry on page 1">P-52</a><span class="pri"><span class="dot minor" aria-hidden="true"></span>Minor</span><span class="hd"><span class="vh">Hard to defend: </span><span class="meter" aria-hidden="true"><i style="width:25%"></i></span>25</span></p><p class="pp-line">The reward–steps link is built in, not discovered</p><p class="pp-move"><span class="from">Your set: Own</span><span aria-hidden="true">→</span><span class="vh">Suggested: </span><span class="to"><a href="#set-B">Set B</a></span></p><p class="pp-tags"><span class="chg move">Move</span><span class="prep"><span class="glyph glance" aria-hidden="true"></span>Glance</span></p></div><p class="pp-why">Only comes up if you show the reward–steps correlation. If you need to explain why you compare steps, say "reward is mostly set by the number of steps, so we compare steps directly".</p></li></ol><p class="idx-empty" id="ppEmpty" hidden>No points match all of these filters. Clear one to see more.</p></section>
+<section class="sec" id="whats-wrong"><h2>What's wrong with the current sets</h2><ol class="probs" role="list"><li class="prob" id="fix-1"><div class="prob-h"><span class="prob-n">1</span><h3><a class="pref" href="#row-P-01">P-01</a> on its own, and <a class="pref" href="#row-P-01">P-01</a> in the big set</h3></div><dl><div><dt class="lbl">The problem</dt><dd>The same point is in two places.</dd></div><div><dt class="lbl">Why it matters</dt><dd>You'd prepare two versions of your answer to the most likely question of the day.</dd></div><div class="fix"><dt class="lbl">The fix</dt><dd>Give it one home: set <a href="#set-A">A</a>.</dd></div></dl></li><li class="prob" id="fix-2"><div class="prob-h"><span class="prob-n">2</span><h3>The big set <span class="brace">{<a class="pref" href="#row-P-05">P-05</a>, <a class="pref" href="#row-P-18">P-18</a>, <a class="pref" href="#row-P-35">P-35</a>, <a class="pref" href="#row-P-30">P-30</a>, <a class="pref" href="#row-P-40">P-40</a>, <a class="pref" href="#row-P-01">P-01</a>, <a class="pref" href="#row-P-25">P-25</a>}</span></h3></div><dl><div><dt class="lbl">The problem</dt><dd>The points only share an ending ("…that's future work"). Their first sentences differ: <a class="pref" href="#row-P-40">P-40</a> is a mistake in the paper, <a class="pref" href="#row-P-25">P-25</a> needs "what's new" first, and <a class="pref" href="#row-P-18">P-18</a> is a no-difference result the paper already disclosed.</dd></div><div><dt class="lbl">Why it matters</dt><dd>In Q&amp;A the first sentence is what counts. A "future work" opening gives a wrong answer to <a class="pref" href="#row-P-40">P-40</a> and dodges the real question in <a class="pref" href="#row-P-25">P-25</a>.</dd></div><div class="fix"><dt class="lbl">The fix</dt><dd>Split it across sets <a href="#set-A">A</a>, <a href="#set-B">B</a>, <a href="#set-C">C</a>, <a href="#set-E">E</a> and <a href="#set-I">I</a>.</dd></div></dl></li><li class="prob" id="fix-3"><div class="prob-h"><span class="prob-n">3</span><h3><a class="pref" href="#row-P-04">P-04</a> on its own, <a class="pref" href="#row-P-07">P-07</a> with <a class="pref" href="#row-P-13">P-13</a>, <a class="pref" href="#row-P-22">P-22</a> on its own</h3></div><dl><div><dt class="lbl">The problem</dt><dd>One answer is split across three places.</dd></div><div><dt class="lbl">Why it matters</dt><dd>You risk giving three different definitions of one number, to questions a sharp listener will ask back to back.</dd></div><div class="fix"><dt class="lbl">The fix</dt><dd>Put all three in set <a href="#set-A">A</a>, with <a class="pref" href="#row-P-01">P-01</a>.</dd></div></dl></li><li class="prob" id="fix-4"><div class="prob-h"><span class="prob-n">4</span><h3><span class="brace">{<a class="pref" href="#row-P-07">P-07</a>, <a class="pref" href="#row-P-13">P-13</a>}</span></h3></div><dl><div><dt class="lbl">The problem</dt><dd><a class="pref" href="#row-P-13">P-13</a>'s answer is <a class="pref" href="#row-P-05">P-05</a>'s: every method almost always succeeds, so damage doesn't reach the routing task yet. If you paired them because they share a fix (send real messages along the routes, with hops that can fail), that fix also covers <a class="pref" href="#row-P-01">P-01</a>, <a class="pref" href="#row-P-04">P-04</a> and <a class="pref" href="#row-P-05">P-05</a>.</dd></div><div><dt class="lbl">Why it matters</dt><dd>The grouping rule isn't applied the same way everywhere, so some answers end up in the wrong set.</dd></div><div class="fix"><dt class="lbl">The fix</dt><dd><a class="pref" href="#row-P-07">P-07</a> to set <a href="#set-A">A</a>, <a class="pref" href="#row-P-13">P-13</a> to set <a href="#set-B">B</a>.</dd></div></dl></li><li class="prob" id="fix-5"><div class="prob-h"><span class="prob-n">5</span><h3><span class="brace">{<a class="pref" href="#row-P-02">P-02</a>, <a class="pref" href="#row-P-41">P-41</a>}</span></h3></div><dl><div><dt class="lbl">The problem</dt><dd>It works as two wording fixes, but <a class="pref" href="#row-P-02">P-02</a> is rated Critical (85): episodes are too short for failures, battery drain or the link window to matter.</dd></div><div><dt class="lbl">Why it matters</dt><dd>Its follow-up ("so what does your damage model test?") is set <a href="#set-B">B</a>'s question, which this pair doesn't prepare you for.</dd></div><div class="fix"><dt class="lbl">The fix</dt><dd><a class="pref" href="#row-P-02">P-02</a> to set <a href="#set-B">B</a>. <a class="pref" href="#row-P-41">P-41</a> to set <a href="#set-G">G</a>, with <a class="pref" href="#row-P-15">P-15</a>.</dd></div></dl></li><li class="prob" id="fix-6"><div class="prob-h"><span class="prob-n">6</span><h3><span class="brace">{<a class="pref" href="#row-P-28">P-28</a>, <a class="pref" href="#row-P-45">P-45</a>, <a class="pref" href="#row-P-21">P-21</a>, <a class="pref" href="#row-P-23">P-23</a>}</span></h3></div><dl><div><dt class="lbl">The problem</dt><dd><a class="pref" href="#row-P-21">P-21</a> is about how nodes share the channel (slotted ALOHA), not about the livelock.</dd></div><div><dt class="lbl">Why it matters</dt><dd>A mixed set makes you reach for the wrong answer. If the set meant "simplifications made for the simulator", then <a class="pref" href="#row-P-35">P-35</a>, <a class="pref" href="#row-P-16">P-16</a> and <a class="pref" href="#row-P-43">P-43</a> would belong in it too.</dd></div><div class="fix"><dt class="lbl">The fix</dt><dd><a class="pref" href="#row-P-21">P-21</a> to set <a href="#set-F">F</a>. Keep the other three together.</dd></div></dl></li><li class="prob" id="fix-7"><div class="prob-h"><span class="prob-n">7</span><h3><a class="pref" href="#row-P-06">P-06</a>, <a class="pref" href="#row-P-20">P-20</a>, <a class="pref" href="#row-P-16">P-16</a> and <a class="pref" href="#row-P-43">P-43</a>, each on its own</h3></div><dl><div><dt class="lbl">The problem</dt><dd>They're one story: airtime and packet sizes.</dd></div><div><dt class="lbl">Why it matters</dt><dd>The numbers have to agree. 4.4% assumes a beacon of about 20 bytes; with the paper's 34-byte header it would be 6.0–6.6%.</dd></div><div class="fix"><dt class="lbl">The fix</dt><dd>Put all four in set <a href="#set-F">F</a>, with <a class="pref" href="#row-P-21">P-21</a>.</dd></div></dl></li><li class="prob" id="fix-8"><div class="prob-h"><span class="prob-n">8</span><h3><a class="pref" href="#row-P-12">P-12</a> on its own</h3></div><dl><div><dt class="lbl">The problem</dt><dd>It's the trap inside "why RL?".</dd></div><div><dt class="lbl">Why it matters</dt><dd>The easy excuse, "PPO only sees local information", is exactly what <a class="pref" href="#row-P-12">P-12</a> disproves. It also has to match the livelock answer: no "lower bound", and no "the 8 slots hold PPO back".</dd></div><div class="fix"><dt class="lbl">The fix</dt><dd>Put it in set <a href="#set-E">E</a>.</dd></div></dl></li></ol></section>
+<section class="sec" id="not-to-say"><h2>Things not to say</h2><div class="traps"><div class="trap" id="trap-1"><p class="trap-k"><a class="pref" href="#row-P-16">P-16</a></p><div class="swap"><div class="avoid"><p class="lbl">Tempting</p><p>"The real on-air header is compact."</p></div><div class="say"><p class="lbl">Say instead</p><p>"The 34-byte layout is the simulator's internal record. The over-the-air format still needs to be specified."</p></div></div><p class="note"><strong>Why not:</strong> No specification of the real header exists, so you can't back it up.</p></div><div class="trap" id="trap-2"><p class="trap-k"><a class="pref" href="#row-P-20">P-20</a></p><div class="swap"><div class="avoid"><p class="lbl">Tempting</p><p>"India has no duty-cycle limit."</p></div><div class="say"><p class="lbl">Say instead</p><p>"ETSI is a European rule. Either way, airtime at this density is the real limit."</p></div></div><p class="note"><strong>Why not:</strong> That hasn't been verified yet.</p></div><div class="trap" id="trap-3"><p class="trap-k"><a class="pref" href="#row-P-12">P-12</a>, <a class="pref" href="#row-P-28">P-28</a>, <a class="pref" href="#row-P-45">P-45</a></p><div class="swap"><div class="avoid"><p class="lbl">Tempting</p><p>"The 8 slots hold PPO back", or "PPO's result is a lower bound."</p></div><div class="say"><p class="lbl">Say instead</p><p>"The fixed list of 8 was a simplification. Hiding dead neighbours from the agent (masking) is the fix."</p></div></div><p class="note"><strong>Why not:</strong> In the tested scenarios the 8 slots always include a best next hop, and the lower bound was never measured.</p></div><div class="trap" id="trap-4"><p class="trap-k"><a class="pref" href="#row-P-25">P-25</a></p><div class="swap"><div class="avoid"><p class="lbl">Tempting</p><p>"Hardware is next." (as the whole answer)</p></div><div class="say"><p class="lbl">Say instead</p><p>"[5] has hardware results and we don't yet. What we add is …"</p></div></div><p class="note"><strong>Why not:</strong> It doesn't say what ABOT adds over [5].</p></div><div class="trap" id="trap-5"><p class="trap-k"><a class="pref" href="#row-P-05">P-05</a></p><div class="swap"><div class="avoid"><p class="lbl">Tempting</p><p>"The damage sweep is just a baseline."</p></div><div class="say"><p class="lbl">Say instead</p><p>"Every method almost always succeeds, at every damage level, so we compare route length. A harder version is needed."</p></div></div><p class="note"><strong>Why not:</strong> Section II of the paper claims the five-level sweep as a contribution.</p></div><div class="trap" id="trap-6"><p class="trap-k"><a class="pref" href="#row-P-07">P-07</a></p><div class="swap"><div class="avoid"><p class="lbl">Tempting</p><p>"It's a proof of concept; hardware will tell."</p></div><div class="say"><p class="lbl">Say instead</p><p>"Partly, yes: the planner uses that same score. We only claim it changes which routes get picked."</p></div></div><p class="note"><strong>Why not:</strong> The problem is the choice of measure, and hardware doesn't change that.</p></div><div class="trap" id="trap-7"><p class="trap-k"><a class="pref" href="#row-P-18">P-18</a></p><div class="swap"><div class="avoid"><p class="lbl">Tempting</p><p>"The gossip arm paid the airtime cost."</p></div><div class="say"><p class="lbl">Say instead</p><p>"Gossip made no difference. Its merge step isn't connected yet."</p></div></div><p class="note"><strong>Why not:</strong> No gossip was sent during evaluation.</p></div><div class="trap" id="trap-8"><p class="trap-k">Any point</p><div class="swap"><div class="avoid"><p class="lbl">Tempting</p><p>"That's future work," as a reflex.</p></div><div class="say"><p class="lbl">Say instead</p><p>"The experiment that would answer this is …"</p></div></div><p class="note"><strong>Why not:</strong> Say "next" only for experiments you really plan. Several answers in a row that end in "future work" sound like the paper has no results.</p></div></div></section>
+<section class="sec" id="advice"><h2>Other advice</h2><ol class="advice"><li><p class="adv">Say it first. Put one "limitations and next steps" slide in the talk that covers sets <a href="#set-A">A</a>, <a href="#set-B">B</a> and <a href="#set-H">H</a>.</p><p class="note">When you volunteer an admission, it sounds honest, and it's what the reviewers asked for. When it's dragged out of you in Q&amp;A, it sounds like a hole.</p></li><li><p class="adv">For the 7 Critical points (<a class="pref" href="#row-P-01">P-01</a> to <a class="pref" href="#row-P-07">P-07</a>), prepare an admission that keeps the narrow claim, not a rebuttal.</p><p class="note">They're rated 75–85 hard to defend. Arguing makes them worse.</p></li><li><p class="adv">Decide what goes on the slides first.</p><p class="note"><a class="pref" href="#row-P-16">P-16</a>, <a class="pref" href="#row-P-43">P-43</a>, <a class="pref" href="#row-P-21">P-21</a>, <a class="pref" href="#row-P-31">P-31</a> and <a class="pref" href="#row-P-52">P-52</a> only come up if that detail is on a slide. There's no slide deck in the prep folder yet.</p></li><li><p class="adv">Prepare the two standard questions as well: "Have you tested it on real hardware? How realistic is it?" (set <a href="#set-G">G</a>) and "Why use RL?" (set <a href="#set-E">E</a>).</p><p class="note">They aren't red-team points, but they're the most likely questions of all.</p></li><li><p class="adv">Learn the 9 opening lines by heart, then one follow-up line for each point.</p><p class="note">9 sentences are easier to recall under pressure than 17 separate explanations.</p></li></ol></section>
+<section class="sec" id="keep"><h2>Good choices to keep</h2><div class="prose"><ul><li>All 10 points the triage marked "have an answer ready" are on your list: <a class="pref" href="#row-P-01">P-01</a>, <a class="pref" href="#row-P-03">P-03</a>, <a class="pref" href="#row-P-04">P-04</a>, <a class="pref" href="#row-P-05">P-05</a>, <a class="pref" href="#row-P-06">P-06</a>, <a class="pref" href="#row-P-07">P-07</a>, <a class="pref" href="#row-P-10">P-10</a>, <a class="pref" href="#row-P-11">P-11</a>, <a class="pref" href="#row-P-22">P-22</a> and <a class="pref" href="#row-P-25">P-25</a>.</li><li><span class="brace">{<a class="pref" href="#row-P-10">P-10</a>, <a class="pref" href="#row-P-11">P-11</a>}</span> is a real set: both are about how ABOT compares with existing mesh routing.</li><li><span class="brace">{<a class="pref" href="#row-P-23">P-23</a>, <a class="pref" href="#row-P-28">P-28</a>, <a class="pref" href="#row-P-45">P-45</a>}</span> is the livelock, and those three belong together. Section VI of the paper already says dead neighbours stay addressable, so the honest cause is in print.</li><li>Moving <a class="pref" href="#row-P-12">P-12</a>, <a class="pref" href="#row-P-15">P-15</a> and <a class="pref" href="#row-P-20">P-20</a> up from "watch your wording" is sensible. They're the wording points a listener can most easily turn into a question.</li></ul></div></section><footer class="plan-foot"><p>Page 2 of the ABOT red-team guide. <a href="ABOT-red-team-explained.html">Back to page 1: the 52 points, explained</a></p><p>Built from <code>ABOT-qa-prep-plan.md</code>, the same source as the "Q&amp;A prep review" sheet in <code>ABOT-red-team.xlsx</code>.</p></footer></main>
+<a class="totop" id="totop" href="#top" hidden><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 16V4M5 9l5-5 5 5"/></svg>Top</a>
+<script>
+(function () {
+  'use strict';
+  var doc = document, root = doc.documentElement;
+  function $(s, r) { return (r || doc).querySelector(s); }
+  function $$(s, r) { return Array.prototype.slice.call((r || doc).querySelectorAll(s)); }
+
+  /* ---------- opening lines: show them, or hide them to test yourself ---------- */
+  var pBtns = $$('[data-practice-btn]');
+  function setPractice(test) {
+    if (test) root.setAttribute('data-practice', ''); else root.removeAttribute('data-practice');
+    pBtns.forEach(function (b) { b.setAttribute('aria-pressed', String((b.getAttribute('data-practice-btn') === 'test') === test)); });
+    $$('.set.shown').forEach(function (s) { s.classList.remove('shown'); });
+    $$('.reveal').forEach(function (b) { b.setAttribute('aria-expanded', 'false'); b.textContent = 'Show the opening line'; });
+  }
+  pBtns.forEach(function (b) {
+    b.addEventListener('click', function () { setPractice(b.getAttribute('data-practice-btn') === 'test'); });
+  });
+  $$('.reveal').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var set = b.closest('.set');
+      var open = !set.classList.contains('shown');
+      set.classList.toggle('shown', open);
+      b.setAttribute('aria-expanded', String(open));
+      b.textContent = open ? 'Hide it again' : 'Show the opening line';
+    });
+  });
+
+  /* ---------- every point: filters ---------- */
+  var list = $('#pp');
+  if (list) {
+    var rows = $$('.pp-row', list);
+    var chips = $$('#ppTools [data-f]');
+    var apply = function () {
+      var act = {};
+      chips.forEach(function (c) {
+        if (c.getAttribute('aria-pressed') === 'true') (act[c.dataset.f] = act[c.dataset.f] || []).push(c.dataset.v);
+      });
+      var keys = Object.keys(act), shown = 0;
+      rows.forEach(function (r) {
+        var ok = keys.every(function (f) {
+          var have = (r.dataset[f] || '').split(' ');
+          return act[f].some(function (v) { return have.indexOf(v) !== -1; });
+        });
+        r.hidden = !ok;
+        if (ok) shown++;
+      });
+      $('#ppCount').textContent = shown === rows.length ? 'Showing all ' + shown + ' points' : 'Showing ' + shown + ' of ' + rows.length + ' points';
+      $('#ppEmpty').hidden = shown !== 0;
+      $('#ppClear').hidden = keys.length === 0;
+    };
+    chips.forEach(function (c) {
+      c.addEventListener('click', function () {
+        c.setAttribute('aria-pressed', String(c.getAttribute('aria-pressed') !== 'true'));
+        apply();
+      });
+    });
+    $('#ppClear').addEventListener('click', function () {
+      chips.forEach(function (c) { c.setAttribute('aria-pressed', 'false'); });
+      apply();
+    });
+    apply();
+  }
+
+  /* ---------- jump highlight; a filtered-out row is shown again when linked to ---------- */
+  function flash(el) {
+    el.classList.remove('flash');
+    void el.offsetWidth;
+    el.classList.add('flash');
+    clearTimeout(el._flash);
+    el._flash = setTimeout(function () { el.classList.remove('flash'); }, 1900);
+  }
+  function onHash() {
+    var id = decodeURIComponent(location.hash.slice(1));
+    if (!id) return;
+    var t = doc.getElementById(id);
+    if (!t) return;
+    if (t.hidden && t.classList.contains('pp-row')) {
+      t.hidden = false;
+      t.scrollIntoView();
+    }
+    if (t.matches('.set, .pp-row, .prob, .trap')) flash(t);
+  }
+  window.addEventListener('hashchange', onHash);
+  if (location.hash) setTimeout(onHash, 80);
+
+  /* ---------- back to top ---------- */
+  var totop = $('#totop'), ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () { ticking = false; totop.hidden = window.scrollY < 900; });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+</body>
+</html>

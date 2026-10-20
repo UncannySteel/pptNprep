@@ -1,0 +1,11 @@
+# Keep LF endings on scripts and config so the hooks run on every OS
+# (a CRLF guard.sh breaks under sh on Windows checkouts with autocrlf).
+*.sh   text eol=lf
+*.py   text eol=lf
+*.json text eol=lf
+*.md   text eol=lf
+
+*.docx binary
+*.pptx binary
+*.pdf  binary
+*.png  binary

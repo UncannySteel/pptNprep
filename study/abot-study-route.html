@@ -1,0 +1,1130 @@
+<title>ABOT Study Route</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..800&family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/* Layout: one reading column. A prerequisite flowchart (trunk, two tracks, merge, RL extension) links down to one card per concept, in study order. */
+:root {
+  --bg: #F2F5F6;
+  --surface: #FFFFFF;
+  --ink: #13202A;
+  --muted: #566874;
+  --rule: #D5DDE2;
+  --rule-strong: #8C9EA9;
+  --net: #0B717C;
+  --net-soft: #E0F0F1;
+  --alg: #8A5800;
+  --alg-soft: #F6ECD8;
+  --learn: #4D57A3;
+  --learn-soft: #E8EAF6;
+  --sos: #BF3B25;
+  --sos-soft: #FBE8E3;
+  --done: #2B7A4B;
+  --f-display: "Archivo", "Arial Narrow", Arial, sans-serif;
+  --f-body: "Public Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D151B; --surface: #142028; --ink: #E1E8EC; --muted: #98A9B4;
+    --rule: #26353F; --rule-strong: #546976;
+    --net: #55BFC9; --net-soft: #12313A; --alg: #E2B661; --alg-soft: #382A12;
+    --learn: #9DA6F0; --learn-soft: #1D2343; --sos: #FF876A; --sos-soft: #3A1D17; --done: #6FCC94;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D151B; --surface: #142028; --ink: #E1E8EC; --muted: #98A9B4;
+  --rule: #26353F; --rule-strong: #546976;
+  --net: #55BFC9; --net-soft: #12313A; --alg: #E2B661; --alg-soft: #382A12;
+  --learn: #9DA6F0; --learn-soft: #1D2343; --sos: #FF876A; --sos-soft: #3A1D17; --done: #6FCC94;
+  color-scheme: dark;
+}
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.6; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-inline: 20px; padding-block: 36px 72px; display: grid; gap: 56px; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--net); outline-offset: 3px; border-radius: 6px; }
+sub { font-size: .72em; }
+
+.eyebrow, .meta, h4, .tag, .cap, .lbl, .wk-day, .wk-h, .legend { font-family: var(--f-mono); text-transform: uppercase; letter-spacing: .07em; }
+
+/* ---------- header ---------- */
+.top { display: grid; grid-template-columns: 1.45fr 1fr; gap: 40px; align-items: start; }
+.top > * { min-width: 0; }
+.eyebrow { font-size: 12px; color: var(--muted); margin: 0 0 10px; }
+h1 { font-family: var(--f-display); font-stretch: 116%; font-weight: 800; font-size: clamp(2.1rem, 5.2vw, 3.4rem); line-height: 1.02; letter-spacing: -.01em; margin: 0; text-wrap: balance; }
+.intro { font-size: 1.1rem; max-width: 60ch; margin: 16px 0 0; }
+.legend { margin: 22px 0 0; display: flex; flex-wrap: wrap; gap: 10px 22px; font-size: 11.5px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.sw { width: 18px; height: 12px; border-radius: 3px; border: 2px solid var(--ink); background: var(--surface); }
+.sw.net { border-color: var(--net); } .sw.alg { border-color: var(--alg); } .sw.learn { border-color: var(--learn); } .sw.key { border-color: var(--sos); background: var(--sos-soft); }
+
+.week { background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; padding: 18px 20px; }
+.wk-h { font-size: 11.5px; color: var(--muted); margin: 0 0 10px; display: flex; justify-content: space-between; gap: 12px; }
+.week ol { list-style: none; margin: 0; padding: 0; }
+.week li { display: grid; grid-template-columns: 4.2em 1fr auto; gap: 12px; padding: 7px 0; border-top: 1px solid var(--rule); font-size: 14.5px; align-items: baseline; }
+.week li:first-child { border-top: 0; }
+.wk-day { font-size: 12px; color: var(--muted); }
+.wk-hr { font-family: var(--f-mono); font-size: 13px; font-variant-numeric: tabular-nums; color: var(--muted); }
+.progress { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--rule); }
+.progress p { margin: 0 0 8px; font-family: var(--f-mono); font-size: 13px; font-variant-numeric: tabular-nums; }
+.pbar { height: 6px; border-radius: 3px; background: var(--rule); overflow: hidden; }
+.pbar i { display: block; height: 100%; width: 0; background: var(--done); transition: width .3s ease; }
+
+h2 { font-family: var(--f-display); font-stretch: 112%; font-weight: 750; font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.1; margin: 0; text-wrap: balance; }
+.sec-head { display: grid; gap: 6px; margin-bottom: 22px; }
+.sec-head p { margin: 0; color: var(--muted); max-width: 66ch; }
+
+/* ---------- flowchart ---------- */
+.route { max-width: 780px; margin: 0 auto; display: grid; justify-items: center; }
+.cap { font-size: 12px; padding: 5px 14px; border-radius: 999px; border: 1.5px solid var(--ink); background: var(--surface); }
+.cap.end { background: var(--ink); color: var(--bg); }
+.link { position: relative; width: 100%; height: 28px; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(var(--rule-strong), var(--rule-strong)) center top / 2px calc(100% - 6px) no-repeat; }
+.link::after { content: ""; position: absolute; bottom: 0; left: 50%; margin-left: -5px;
+  border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 7px solid var(--rule-strong); }
+.link.plain { background-size: 2px 100%; }
+.link.plain::after { display: none; }
+.link.tall { height: 56px; }
+.lbl { font-size: 10.5px; background: var(--bg); padding: 2px 6px; line-height: 1.3; text-align: center; color: var(--muted); }
+.track.net .lbl { color: var(--net); }
+.track.alg .lbl { color: var(--alg); }
+.lbl.learn { color: var(--learn); }
+
+.node { display: block; width: min(100%, 330px); background: var(--surface); color: var(--ink); text-decoration: none;
+  border: 1.5px solid var(--ink); border-radius: 10px; padding: 9px 14px 11px; transition: transform .15s ease, box-shadow .15s ease; }
+.node:hover { transform: translateY(-1px); box-shadow: 0 3px 0 var(--rule); }
+.node .tag { display: flex; justify-content: space-between; gap: 8px; font-size: 11px; color: var(--muted); }
+.node .t { display: block; font-family: var(--f-display); font-stretch: 104%; font-weight: 700; font-size: 16.5px; line-height: 1.2; margin-top: 3px; text-wrap: balance; }
+.node .s { display: block; font-size: 13.5px; color: var(--muted); line-height: 1.35; margin-top: 3px; }
+.node .ok { display: none; color: var(--done); font-weight: 500; }
+.node.is-done .ok { display: inline; }
+.node.is-done { border-style: dashed; }
+.track.net .node { border-color: var(--net); }
+.track.alg .node { border-color: var(--alg); }
+.node.learn { border-color: var(--learn); }
+.node.key { border-color: var(--sos); background: var(--sos-soft); border-width: 2px; }
+.node.key .tag b { color: var(--sos); font-weight: 500; }
+
+.fork { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
+.bar { grid-column: 1 / -1; height: 2px; margin-inline: 25%; background: var(--rule-strong); }
+.track { display: flex; flex-direction: column; align-items: center; padding-inline: 8px; min-width: 0; }
+.tail { flex: 1; min-height: 18px; width: 100%; background: linear-gradient(var(--rule-strong), var(--rule-strong)) center / 2px 100% no-repeat; }
+.route-note { margin: 18px auto 0; max-width: 760px; text-align: center; font-size: 14px; color: var(--muted); }
+
+/* ---------- concept cards ---------- */
+.stops { display: grid; gap: 22px; }
+.stop { background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; padding: 22px clamp(16px, 3.2vw, 30px) 24px; scroll-margin-top: 20px; }
+.stop-head { display: grid; grid-template-columns: auto 1fr auto; gap: 16px; align-items: start; }
+.num { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; font-family: var(--f-mono); font-weight: 500; font-size: 15px; color: var(--surface); background: var(--ink); }
+.stop[data-track="net"] .num { background: var(--net); }
+.stop[data-track="alg"] .num { background: var(--alg); }
+.stop[data-track="learn"] .num { background: var(--learn); }
+.stop[data-key] .num { background: var(--sos); }
+.meta { font-size: 11.5px; color: var(--muted); margin: 0 0 3px; display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.meta a { text-decoration: none; border-bottom: 1px solid var(--rule-strong); }
+.badge { color: var(--sos); }
+.stop h3 { font-family: var(--f-display); font-stretch: 108%; font-weight: 750; font-size: clamp(1.25rem, 2.4vw, 1.55rem); line-height: 1.18; margin: 0; text-wrap: balance; }
+.donebox { display: inline-flex; align-items: center; gap: 7px; font-family: var(--f-mono); font-size: 12.5px; border: 1.5px solid var(--rule-strong); border-radius: 999px; padding: 5px 13px 5px 10px; cursor: pointer; white-space: nowrap; user-select: none; }
+.donebox input { width: 16px; height: 16px; margin: 0; accent-color: var(--done); cursor: pointer; }
+.stop.is-done .donebox { border-color: var(--done); color: var(--done); }
+.lede { font-size: 1.07rem; max-width: 72ch; margin: 16px 0 0; }
+
+.cols { display: grid; grid-template-columns: 1.1fr 1fr; gap: 32px; margin-top: 20px; }
+.cols > div { min-width: 0; display: grid; gap: 22px; align-content: start; }
+h4 { font-size: 11.5px; font-weight: 500; color: var(--muted); margin: 0 0 9px; }
+dl.terms { margin: 0; display: grid; gap: 12px; font-size: 15px; line-height: 1.5; }
+dl.terms dt { font-weight: 700; }
+dl.terms dd { margin: 1px 0 0; }
+.tier { display: inline-block; font-family: var(--f-mono); font-size: 9.5px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; padding: 1px 6px; border-radius: 4px; margin-left: 8px; vertical-align: 2px; }
+.tier.core { background: var(--ink); color: var(--surface); }
+.tier.deep { border: 1px solid var(--rule-strong); color: var(--muted); }
+.code-name { font-family: var(--f-mono); font-size: .88em; font-weight: 400; }
+ul.nums { list-style: none; margin: 0; padding: 0; display: grid; gap: 11px; font-size: 15px; line-height: 1.45; }
+ul.nums li { display: grid; grid-template-columns: minmax(0, 8.8em) 1fr; gap: 14px; align-items: baseline; }
+ul.nums .n { font-family: var(--f-mono); font-weight: 500; font-variant-numeric: tabular-nums; font-size: 14px; }
+.scope { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px; line-height: 1.45; }
+.scope div { background: var(--bg); border-radius: 8px; padding: 10px 12px; }
+.scope b { display: block; font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; font-weight: 500; margin-bottom: 3px; }
+.scope .yes b { color: var(--done); }
+.scope .no b { color: var(--sos); }
+.read { margin: 0; font-size: 15px; }
+.q { font-family: var(--f-mono); font-size: 12.5px; background: var(--bg); border: 1px solid var(--rule); padding: 1px 7px; border-radius: 5px; white-space: nowrap; line-height: 2.1; }
+.test { border-top: 1.5px dashed var(--rule-strong); padding-top: 14px; }
+.test p { margin: 0; font-weight: 600; font-size: 15.5px; }
+
+.work { background: var(--bg); border-radius: 10px; padding: 14px 16px; font-size: 14.5px; display: grid; gap: 8px; }
+.work p { margin: 0; }
+.calc { font-family: var(--f-mono); font-size: 13px; font-variant-numeric: tabular-nums; line-height: 1.75; overflow-x: auto; }
+.calc span { display: block; white-space: nowrap; }
+.calc .res { color: var(--net); font-weight: 500; }
+.note { font-size: 13.5px; color: var(--muted); }
+.tbl-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+th, td { padding: 6px 10px; text-align: right; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; padding-left: 0; }
+th { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); font-weight: 500; vertical-align: bottom; }
+.obs { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; font-size: 14.5px; }
+.obs li { display: grid; grid-template-columns: 2.4em 1fr; gap: 10px; }
+.obs b { font-family: var(--f-mono); font-weight: 500; font-size: 14px; }
+ol.cycle { list-style: none; counter-reset: c; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 14.5px; }
+ol.cycle li { counter-increment: c; display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: start; }
+ol.cycle li::before { content: counter(c); width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid var(--sos); color: var(--sos); display: grid; place-items: center; font-family: var(--f-mono); font-size: 12px; }
+ol.cycle li.back::before { content: "↺"; font-size: 14px; }
+
+/* ---------- figures ---------- */
+.fig { margin: 22px 0 0; }
+.fig-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.panel { background: var(--bg); border-radius: 10px; padding: 12px 14px 14px; min-width: 0; }
+.panel h5 { margin: 0 0 4px; font-family: var(--f-mono); font-size: 11px; font-weight: 500; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.panel svg, .fig-wide svg { display: block; width: 100%; height: auto; }
+.panel p { margin: 6px 0 0; font-size: 14px; line-height: 1.45; }
+.fig-wide { background: var(--bg); border-radius: 10px; padding: 14px 16px; max-width: 640px; }
+.fig figcaption { font-size: 14px; color: var(--muted); margin-top: 10px; max-width: 76ch; }
+svg .g-edge { stroke: var(--rule-strong); stroke-width: 2; fill: none; }
+svg .g-pick { stroke: var(--net); stroke-width: 6; stroke-linecap: round; fill: none; opacity: .9; }
+svg .g-node { fill: var(--surface); stroke: var(--ink); stroke-width: 1.5; }
+svg .g-lab { fill: var(--ink); font-family: var(--f-body); font-size: 15px; font-weight: 700; }
+svg .g-num { fill: var(--ink); font-family: var(--f-mono); font-size: 12.5px; }
+svg .g-axis { stroke: var(--rule-strong); stroke-width: 1.5; }
+svg .g-tick { stroke: var(--rule-strong); stroke-width: 1.5; }
+svg .g-frame { fill: var(--net-soft); stroke: var(--net); stroke-width: 1.5; }
+svg .g-hit { fill: var(--sos-soft); stroke: var(--sos); stroke-width: 1.5; }
+svg .g-row { fill: var(--ink); font-family: var(--f-body); font-size: 13px; font-weight: 700; }
+svg .g-small { fill: var(--muted); font-family: var(--f-mono); font-size: 11px; }
+
+footer { font-size: 13.5px; color: var(--muted); max-width: 72ch; }
+footer p { margin: 0 0 6px; }
+
+@media (max-width: 820px) {
+  .top { grid-template-columns: 1fr; gap: 28px; }
+  .cols { grid-template-columns: 1fr; gap: 22px; }
+}
+@media (max-width: 600px) {
+  .wrap { gap: 44px; padding-block: 24px 56px; padding-inline: 16px; }
+  .stop-head { grid-template-columns: auto 1fr; }
+  .donebox { grid-column: 1 / -1; justify-self: start; }
+  .scope, .fig-pair { grid-template-columns: 1fr; }
+  ul.nums li { grid-template-columns: 1fr; gap: 1px; }
+  .node { padding: 8px 10px 10px; }
+  .node .t { font-size: 14.5px; }
+  .node .s { display: none; }
+  .track { padding-inline: 4px; }
+  .lbl { font-size: 9.5px; }
+}
+</style>
+
+<div class="wrap">
+
+<header class="top">
+  <div>
+    <p class="eyebrow">ABOT · IEEE R10-HTC 2026 · Technical concepts</p>
+    <h1>Fourteen concepts, seven days</h1>
+    <p class="intro">The technical ideas behind the ABOT paper, in the order they build on each other. An arrow means "learn this first". Each card explains the concepts in plain words, shows where the paper uses them and with which numbers, and works through an example.</p>
+    <div class="legend" aria-label="Legend">
+      <span><i class="sw net"></i>Radio &amp; protocol</span>
+      <span><i class="sw alg"></i>Algorithms &amp; evaluation</span>
+      <span><i class="sw key"></i>Main result</span>
+      <span><i class="sw learn"></i>RL extension</span>
+      <span><b class="tier core" style="margin:0">Core</b>Must explain</span>
+      <span><b class="tier deep" style="margin:0">Deeper</b>Know if asked</span>
+    </div>
+  </div>
+  <aside class="week" aria-label="Week at a glance">
+    <p class="wk-h"><span>Week at a glance</span><span>≈ 24 h</span></p>
+    <ol>
+      <li><span class="wk-day">Day 1</span><span>1–2 · networks, radio physics</span><span class="wk-hr">3 h</span></li>
+      <li><span class="wk-day">Day 2</span><span>3–4 · LoRa, channel model</span><span class="wk-hr">3.5 h</span></li>
+      <li><span class="wk-day">Day 3</span><span>5–7 · collisions, forwarding, link state</span><span class="wk-hr">4 h</span></li>
+      <li><span class="wk-day">Day 4</span><span>8–9 · graphs, simulation</span><span class="wk-hr">3.5 h</span></li>
+      <li><span class="wk-day">Day 5</span><span>10–11 · statistics, main result</span><span class="wk-hr">3.5 h</span></li>
+      <li><span class="wk-day">Day 6</span><span>12–13 · RL, PPO</span><span class="wk-hr">4 h</span></li>
+      <li><span class="wk-day">Day 7</span><span>14 · ABOT's RL design</span><span class="wk-hr">2.5 h</span></li>
+    </ol>
+    <div class="progress">
+      <p id="prog-text">0 of 14 concepts done</p>
+      <div class="pbar"><i id="prog-bar"></i></div>
+    </div>
+  </aside>
+</header>
+
+<section id="route" aria-labelledby="route-h">
+  <div class="sec-head">
+    <h2 id="route-h">The concept map</h2>
+    <p>Both tracks feed the main result. Reinforcement learning comes last because it is compared against the routing planners. Tap any box to jump to its card.</p>
+  </div>
+
+  <nav class="route" aria-label="Concept flowchart">
+    <span class="cap">Start · Day 1</span>
+    <div class="link"></div>
+    <a class="node" href="#s1" data-node="1"><span class="tag"><span>1 · Day 1</span><span class="ok">✓ done</span></span><span class="t">Networks 101</span><span class="s">Nodes, packets, mesh vs gateway, layers</span></a>
+    <div class="link plain"></div>
+
+    <div class="fork">
+      <div class="bar"></div>
+      <div class="track net">
+        <div class="link tall"><span class="lbl">Track A<br>Radio &amp; protocol</span></div>
+        <a class="node" href="#s2" data-node="2"><span class="tag"><span>2 · Day 1</span><span class="ok">✓</span></span><span class="t">Radio physics</span><span class="s">dB, dBm, SNR, link budget</span></a>
+        <div class="link"></div>
+        <a class="node" href="#s3" data-node="3"><span class="tag"><span>3 · Day 2</span><span class="ok">✓</span></span><span class="t">LoRa</span><span class="s">Spreading factor, airtime, duty cycle</span></a>
+        <div class="link"></div>
+        <a class="node" href="#s4" data-node="4"><span class="tag"><span>4 · Day 2</span><span class="ok">✓</span></span><span class="t">Channel model</span><span class="s">Path loss, shadowing, Fig. 2</span></a>
+        <div class="link"></div>
+        <a class="node" href="#s5" data-node="5"><span class="tag"><span>5 · Day 3</span><span class="ok">✓</span></span><span class="t">Collisions and MAC</span><span class="s">Slotted ALOHA, 6 dB capture</span></a>
+        <div class="link"></div>
+        <a class="node" href="#s6" data-node="6"><span class="tag"><span>6 · Day 3</span><span class="ok">✓</span></span><span class="t">Forwarding protocol</span><span class="s">Beacons, gossip, TTL, geo-greedy</span></a>
+        <div class="link"></div>
+        <a class="node" href="#s7" data-node="7"><span class="tag"><span>7 · Day 3</span><span class="ok">✓</span></span><span class="t">Link-state monitoring</span><span class="s">PDR window, reachability</span></a>
+        <div class="tail"></div>
+      </div>
+      <div class="track alg">
+        <div class="link tall"><span class="lbl">Track B<br>Algorithms &amp; evaluation</span></div>
+        <a class="node" href="#s8" data-node="8"><span class="tag"><span>8 · Day 4</span><span class="ok">✓</span></span><span class="t">Graphs and shortest paths</span><span class="s">Dijkstra, A*, degree</span></a>
+        <div class="link"></div>
+        <a class="node" href="#s9" data-node="9"><span class="tag"><span>9 · Day 4</span><span class="ok">✓</span></span><span class="t">Simulation methods</span><span class="s">Event-driven vs time-stepped</span></a>
+        <div class="link"></div>
+        <a class="node" href="#s10" data-node="10"><span class="tag"><span>10 · Day 5</span><span class="ok">✓</span></span><span class="t">Evaluation statistics</span><span class="s">Mann–Whitney, Holm, KS</span></a>
+        <div class="tail"></div>
+      </div>
+      <div class="bar"></div>
+    </div>
+
+    <div class="link tall"><span class="lbl">Needs both tracks</span></div>
+    <a class="node key" href="#s11" data-node="11"><span class="tag"><span>11 · Day 5</span><b>★ main result</b><span class="ok">✓</span></span><span class="t">Link-aware routing</span><span class="s">Live PDR in the cost: the ablation</span></a>
+    <div class="link tall"><span class="lbl learn">RL extension<br>(exploratory)</span></div>
+    <a class="node learn" href="#s12" data-node="12"><span class="tag"><span>12 · Day 6</span><span class="ok">✓ done</span></span><span class="t">RL fundamentals</span><span class="s">Agent, reward, policy, value</span></a>
+    <div class="link"></div>
+    <a class="node learn" href="#s13" data-node="13"><span class="tag"><span>13 · Day 6</span><span class="ok">✓ done</span></span><span class="t">PPO and training</span><span class="s">Actor-critic, clipping, explained variance</span></a>
+    <div class="link"></div>
+    <a class="node learn" href="#s14" data-node="14"><span class="tag"><span>14 · Day 7</span><span class="ok">✓ done</span></span><span class="t">ABOT's RL design</span><span class="s">24 inputs, 8 actions, the livelock</span></a>
+    <div class="link"></div>
+    <span class="cap end">All 14 concepts</span>
+  </nav>
+  <p class="route-note">Tick a concept when you can answer its "check yourself" question out loud. Ticks are saved in this browser only.</p>
+</section>
+
+<section aria-labelledby="stops-h">
+  <div class="sec-head">
+    <h2 id="stops-h">The concepts</h2>
+    <p>Paper sections are named by heading so you can find them. Worked examples use the paper's own formula and Table I; where the implementation adds a detail the paper doesn't state, the card says so.</p>
+  </div>
+
+  <div class="stops">
+
+  <!-- 1 -->
+  <article class="stop" id="s1">
+    <div class="stop-head">
+      <span class="num">1</span>
+      <div><p class="meta"><span>Day 1 · about 1 h · Foundation</span><a href="#route">↑ map</a></p><h3>Networks 101</h3></div>
+      <label class="donebox"><input type="checkbox" id="done-1" data-stop="1"> Done</label>
+    </div>
+    <p class="lede">A network is a set of devices (nodes) that pass messages (packets) to each other over links. ABOT is a mesh with no central base station: every device sends its own messages and relays other people's.</p>
+    <div class="cols">
+      <div>
+        <div><h4>Concepts</h4>
+          <dl class="terms">
+            <div><dt>Node<span class="tier core">Core</span></dt><dd>One device on the network. In ABOT, a LoRa radio carried by a survivor or fixed in place as a relay.</dd></div>
+            <div><dt>Link<span class="tier core">Core</span></dt><dd>A connection between two nodes that can hear each other.</dd></div>
+            <div><dt>Packet, header, payload<span class="tier core">Core</span></dt><dd>A packet is one message. The header carries addressing and control fields; the payload is the content.</dd></div>
+            <div><dt>Multi-hop<span class="tier core">Core</span></dt><dd>A message crosses several links, relayed node to node, to reach a destination outside direct range.</dd></div>
+            <div><dt>Broadcast vs unicast<span class="tier core">Core</span></dt><dd>Broadcast goes to everyone in range. Unicast is addressed to one chosen neighbour.</dd></div>
+            <div><dt>Star vs mesh topology<span class="tier core">Core</span></dt><dd>In a star, such as LoRaWAN, every device talks to a central gateway. In a mesh, devices talk to each other and relay.</dd></div>
+            <div><dt>Single point of failure<span class="tier core">Core</span></dt><dd>A component whose loss takes down the whole system. A gateway is one.</dd></div>
+            <div><dt>Protocol stack<span class="tier core">Core</span></dt><dd>The network's job split into layers, each relying on the one below. ABOT's Fig. 1 has four: Physical (LoRa), MAC and Forwarding, Link-State Monitoring, Routing and Evacuation.</dd></div>
+            <div><dt>Control vs data traffic<span class="tier deep">Deeper</span></dt><dd>Beacons and route updates keep the network running; SOS alerts are what it exists for. Control traffic costs airtime.</dd></div>
+            <div><dt>Ad hoc network (MANET)<span class="tier deep">Deeper</span></dt><dd>A network that forms itself without infrastructure. ABOT belongs to this family.</dd></div>
+          </dl>
+        </div>
+      </div>
+      <div>
+        <div><h4>In ABOT</h4>
+          <ul class="nums">
+            <li><span class="n">0 gateways</span><span>Every node is both terminal and relay. Fully peer-to-peer.</span></li>
+            <li><span class="n">below 50%</span><span>Delivery can drop under half when many devices share few gateways (reference [1]). This is the bottleneck ABOT removes.</span></li>
+            <li><span class="n">5 types</span><span>BEACON, SOS_ALERT, ROUTE_UPDATE, ACK, GOSSIP.</span></li>
+            <li><span class="n">4 layers</span><span>Fig. 1. The text says "three functional layers"; the figure splits MAC and forwarding into its own layer.</span></li>
+          </ul>
+        </div>
+        <div><h4>Read in the paper</h4><p class="read">Introduction (the gateway paragraph); Proposed System opening; System Architecture; Fig. 1.</p></div>
+        <div><h4>Look up</h4><p class="read"><span class="q">mesh vs star topology</span> <span class="q">OSI model explained</span></p></div>
+        <div class="test"><h4>Check yourself</h4><p>Draw Fig. 1's four layers from memory and say in one sentence what each does.</p></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- 2 -->
+  <article class="stop" id="s2" data-track="net">
+    <div class="stop-head">
+      <span class="num">2</span>
+      <div><p class="meta"><span>Day 1 · about 2 h · Track A</span><a href="#route">↑ map</a></p><h3>Radio physics</h3></div>
+      <label class="donebox"><input type="checkbox" id="done-2" data-stop="2"> Done</label>
+    </div>
+    <p class="lede">Range comes down to three quantities: how much power leaves the transmitter, how much is lost on the way, and how faint a signal the receiver can still pick out of background noise. Engineers track all three in decibels so they can simply add and subtract.</p>
+    <div class="cols">
+      <div>
+        <div><h4>Concepts</h4>
+          <dl class="terms">
+            <div><dt>Frequency and band<span class="tier core">Core</span></dt><dd>How fast the radio wave oscillates, in MHz. A band is a range of frequencies set aside for a use.</dd></div>
+            <div><dt>ISM band<span class="tier core">Core</span></dt><dd>Frequencies anyone may use without a licence, within power and airtime rules. In India, 865–867 MHz.</dd></div>
+            <div><dt>Decibel (dB)<span class="tier core">Core</span></dt><dd>A ratio on a log scale. +3 dB ≈ 2× the power, +6 dB ≈ 4×, +10 dB = 10×. Losses and gains add instead of multiplying.</dd></div>
+            <div><dt>dBm<span class="tier core">Core</span></dt><dd>Absolute power in dB relative to 1 milliwatt. 0 dBm = 1 mW; +20 dBm = 100 mW.</dd></div>
+            <div><dt>RSSI<span class="tier core">Core</span></dt><dd>Received signal strength indicator: how strong a frame was at the receiver, in dBm.</dd></div>
+            <div><dt>Noise floor and SNR<span class="tier core">Core</span></dt><dd>Background radio noise sets a floor. Signal-to-noise ratio (SNR) is how far the signal sits above it, in dB.</dd></div>
+            <div><dt>Receiver sensitivity<span class="tier core">Core</span></dt><dd>The faintest signal the receiver can still decode. LoRa decodes below the noise floor (negative SNR), which is the root of its range.</dd></div>
+            <div><dt>Link budget<span class="tier core">Core</span></dt><dd>Transmit power minus sensitivity: the most loss a link can absorb and still work.</dd></div>
+            <div><dt>Bandwidth and noise<span class="tier deep">Deeper</span></dt><dd>A wider channel collects more noise. A narrow 125 kHz channel helps sensitivity.</dd></div>
+          </dl>
+        </div>
+      </div>
+      <div>
+        <div class="work"><h4>Worked example: ABOT's link budget</h4>
+          <div class="calc">
+            <span>Transmit   +20 dBm  = 100 mW</span>
+            <span>Decodable  −137 dBm ≈ 0.00000000000002 mW</span>
+            <span class="res">Link budget = 20 − (−137) = 157 dB</span>
+          </div>
+          <p>Any path that loses less than 157 dB is, on average, heard. Card 4 turns this into a distance.</p>
+        </div>
+        <div><h4>In ABOT (Table I)</h4>
+          <ul class="nums">
+            <li><span class="n">865 MHz</span><span>India's de-licensed 865–867 MHz sub-band, chosen over 915 MHz.</span></li>
+            <li><span class="n">+20 dBm</span><span>Transmit power.</span></li>
+            <li><span class="n">−137 dBm</span><span>Receive sensitivity at SF12 / 125 kHz.</span></li>
+          </ul>
+        </div>
+        <div><h4>Read in the paper</h4><p class="read">Proposed System → Physical Communication Layer; Table I.</p></div>
+        <div><h4>Look up</h4><p class="read"><span class="q">decibels explained</span> <span class="q">signal to noise ratio</span> <span class="q">link budget explained</span></p></div>
+        <div class="test"><h4>Check yourself</h4><p>A frame arrives at −140 dBm. Can ABOT's radio decode it? What about −130 dBm, and by how many dB of margin?</p></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- 3 -->
+  <article class="stop" id="s3" data-track="net">
+    <div class="stop-head">
+      <span class="num">3</span>
+      <div><p class="meta"><span>Day 2 · about 1.5 h · Track A</span><a href="#route">↑ map</a></p><h3>LoRa: range bought with airtime</h3></div>
+      <label class="donebox"><input type="checkbox" id="done-3" data-stop="3"> Done</label>
+    </div>
+    <p class="lede">LoRa is a long-range, low-power radio technique. It spreads each symbol over a long frequency sweep called a chirp, which lets the receiver recover very weak signals. The price is speed: a few hundred bits per second, and seconds of airtime per frame.</p>
+    <div class="cols">
+      <div>
+        <div><h4>Concepts</h4>
+          <dl class="terms">
+            <div><dt>Chirp spread spectrum<span class="tier core">Core</span></dt><dd>Each symbol is a tone that sweeps across the channel. Spreading makes the signal robust to noise and interference.</dd></div>
+            <div><dt>Spreading factor (SF7–SF12)<span class="tier core">Core</span></dt><dd>How long each chirp lasts. Each step up roughly doubles airtime and gains about 2.5 dB of sensitivity. SF12 is the slowest, longest-range setting.</dd></div>
+            <div><dt>Bandwidth<span class="tier core">Core</span></dt><dd>The width of channel the chirp sweeps: 125 kHz in ABOT.</dd></div>
+            <div><dt>Data rate<span class="tier core">Core</span></dt><dd>At SF12 and 125 kHz, about 250 bits per second.</dd></div>
+            <div><dt>Time on air<span class="tier core">Core</span></dt><dd>How long one transmission occupies the channel.</dd></div>
+            <div><dt>MTU<span class="tier core">Core</span></dt><dd>Maximum payload per frame: 51 bytes at SF12 (data rate 0).</dd></div>
+            <div><dt>Duty cycle<span class="tier core">Core</span></dt><dd>The share of time a device may transmit. The limit the paper cites (ETSI EN 300 220-2) is 1%.</dd></div>
+            <div><dt>LoRa vs LoRaWAN<span class="tier core">Core</span></dt><dd>LoRa is the radio. LoRaWAN is a network standard on top of it, routed through gateways. ABOT uses LoRa radios without LoRaWAN.</dd></div>
+            <div><dt>SF orthogonality<span class="tier deep">Deeper</span></dt><dd>Frames at different SFs interfere less with each other. ABOT puts every node on SF12, so they all compete for one channel.</dd></div>
+            <div><dt>Preamble and coding rate<span class="tier deep">Deeper</span></dt><dd>A wake-up pattern before each frame and extra error-correction bits. They're why airtime exceeds the raw bit count.</dd></div>
+          </dl>
+        </div>
+      </div>
+      <div>
+        <div class="work"><h4>Worked example: airtime and duty cycle</h4>
+          <div class="calc">
+            <span>51 B × 8 = 408 bits at ≈ 250 bit/s ≈ 1.6 s of data</span>
+            <span>+ preamble and framing → 2.47 s per full frame</span>
+            <span>Beacons: 4.4% of 30 s ≈ 1.3 s on air each</span>
+            <span class="res">At 1%: one 1.3 s beacon every ≈ 132 s</span>
+          </div>
+          <p>A compliant schedule means beacons roughly every 2.2 minutes instead of every 30 s, before any SOS traffic. Every result that depends on the beacon rate would shift.</p>
+        </div>
+        <div><h4>In ABOT</h4>
+          <ul class="nums">
+            <li><span class="n">SF12 / 125 kHz</span><span>Maximum range setting (Table I).</span></li>
+            <li><span class="n">51 B</span><span>MTU. Shapes the 42-byte gossip budget (card 6).</span></li>
+            <li><span class="n">2.47 s</span><span>Airtime of a full SF12 frame (Simulation Backend).</span></li>
+            <li><span class="n">≈ 4.4% vs 1%</span><span>Duty cycle used vs the limit. Not enforced in the simulation; a stated limitation.</span></li>
+          </ul>
+        </div>
+        <div><h4>Read in the paper</h4><p class="read">Table I; Simulation Backend (the 2.47 s frames); Limitations → Duty cycle.</p></div>
+        <div><h4>Look up</h4><p class="read"><span class="q">LoRa chirp spread spectrum</span> <span class="q">LoRa spreading factor airtime</span> <span class="q">LoRa vs LoRaWAN</span></p></div>
+        <div class="test"><h4>Check yourself</h4><p>What does SF12 buy ABOT, and why does it make the 1% duty-cycle limit harder to meet?</p></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- 4 -->
+  <article class="stop" id="s4" data-track="net">
+    <div class="stop-head">
+      <span class="num">4</span>
+      <div><p class="meta"><span>Day 2 · about 2 h · Track A</span><a href="#route">↑ map</a></p><h3>Channel model: path loss and shadowing</h3></div>
+      <label class="donebox"><input type="checkbox" id="done-4" data-stop="4"> Done</label>
+    </div>
+    <p class="lede">A channel model predicts how much signal two nodes lose between them. ABOT uses the standard log-distance model plus random shadowing. Five damage presets make loss grow faster with distance and vary more from link to link.</p>
+    <div class="cols">
+      <div>
+        <div><h4>Concepts</h4>
+          <dl class="terms">
+            <div><dt>Path loss, PL(d)<span class="tier core">Core</span></dt><dd>Signal lost over a link of length d, in dB.</dd></div>
+            <div><dt>Log-distance model<span class="tier core">Core</span></dt><dd>PL(d) = 31.2 + 10·n<sub>PL</sub>·log₁₀(d). 31.2 dB is the loss at 1 m at 865 MHz. Each tenfold increase in distance adds 10·n<sub>PL</sub> dB.</dd></div>
+            <div><dt>Path-loss exponent, n<sub>PL</sub><span class="tier core">Core</span></dt><dd>How fast loss grows with distance. 2 is open space; cluttered or collapsed terrain is higher. Default 3.8.</dd></div>
+            <div><dt>Log-normal shadowing, σ<span class="tier core">Core</span></dt><dd>A random dB offset for each link, drawn from a bell curve of spread σ. It stands in for walls, debris and other obstacles. Default 11 dB.</dd></div>
+            <div><dt>NLOS<span class="tier core">Core</span></dt><dd>Non-line-of-sight: no clear straight path between the nodes.</dd></div>
+            <div><dt>Severity presets<span class="tier core">Core</span></dt><dd>(n<sub>PL</sub>, σ) pairs: intact (2.7, 7.0), moderate (3.0, 9.0), heavy (3.8, 11.0, the default), severe (4.2, 12.5), extreme (4.5, 14.0).</dd></div>
+            <div><dt>PDR vs distance<span class="tier core">Core</span></dt><dd>Packet delivery ratio as a function of link length. This is Fig. 2.</dd></div>
+            <div><dt>Model vs validation<span class="tier deep">Deeper</span></dt><dd>Parameters are grounded in published measurements (IEEE 802.15.4a, post-earthquake LoRa data) but not tested against ABOT hardware. Fig. 2 shows internal consistency only.</dd></div>
+            <div><dt>Shadowing vs fast fading<span class="tier deep">Deeper</span></dt><dd>Quick fluctuations from reflections (multipath) aren't modelled separately. Shadowing lumps slow, obstacle-driven variation into one random term.</dd></div>
+          </dl>
+        </div>
+      </div>
+      <div>
+        <div class="work"><h4>Worked example: a 1500 m link, heavy damage</h4>
+          <div class="calc">
+            <span>PL = 31.2 + 38 × log₁₀(1500)</span>
+            <span>   = 31.2 + 38 × 3.18 ≈ 151.9 dB</span>
+            <span>Received = 20 − 151.9 ≈ −131.9 dBm</span>
+            <span>Margin over −137 dBm ≈ 5.1 dB</span>
+            <span class="res">σ = 11 dB erases that margin ≈ 1/3 of the time → PDR ≈ 0.68</span>
+          </div>
+          <p>Fig. 2 reports 0.664. The 50% point is where the average received power equals sensitivity, so PL = 157 dB and d = 10<sup>(157 − 31.2) / (10·n)</sup>.</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Preset</th><th>50% distance<br>formula</th><th>Fig. 2</th><th>PDR at 1500 m<br>formula</th><th>Fig. 2</th></tr></thead>
+              <tbody>
+                <tr><td>intact</td><td>45.6 km</td><td>45.5 km</td><td>1.00</td><td>1.000</td></tr>
+                <tr><td>moderate</td><td>15.6 km</td><td>15.5 km</td><td>1.00</td><td>0.999</td></tr>
+                <tr><td>heavy</td><td>2.04 km</td><td>2.0 km</td><td>0.68</td><td>0.664</td></tr>
+                <tr><td>severe</td><td>0.99 km</td><td>1.03 km</td><td>0.27</td><td>0.286</td></tr>
+                <tr><td>extreme</td><td>0.62 km</td><td>637 m</td><td>0.11</td><td>0.109</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="note">Fig. 2 was measured by running the simulator, so it differs slightly from this back-of-envelope version.</p>
+        </div>
+        <div class="scope">
+          <div class="yes"><b>Shows</b>The channel model is internally consistent: PDR falls with distance and with severity, as the formula predicts.</div>
+          <div class="no"><b>Doesn't show</b>Agreement with measured radio data. The paper says so.</div>
+        </div>
+        <div><h4>Read in the paper</h4><p class="read">Physical Communication Layer (the path-loss equation and presets); Experimental Results → Channel Validation; Fig. 2.</p></div>
+        <div><h4>Look up</h4><p class="read"><span class="q">log-distance path loss model</span> <span class="q">log-normal shadowing</span></p></div>
+        <div class="test"><h4>Check yourself</h4><p>Without the table, explain why going from n = 3.8 to 4.5 shrinks the 50% distance from about 2 km to about 0.6 km. Why does damage hurt long links far more than the 400 m ones?</p></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- 5 -->
+  <article class="stop" id="s5" data-track="net">
+    <div class="stop-head">
+      <span class="num">5</span>
+      <div><p class="meta"><span>Day 3 · about 1 h · Track A</span><a href="#route">↑ map</a></p><h3>Collisions and medium access</h3></div>
+      <label class="donebox"><input type="checkbox" id="done-5" data-stop="5"> Done</label>
+    </div>
+    <p class="lede">Every node shares one radio channel. When two transmissions overlap at a receiver they can destroy each other. The MAC (medium access control) layer decides when nodes may transmit and what happens when they clash.</p>
+    <div class="cols">
+      <div>
+        <div><h4>Concepts</h4>
+          <dl class="terms">
+            <div><dt>Shared medium, contention<span class="tier core">Core</span></dt><dd>Many nodes, one channel: transmissions compete for it.</dd></div>
+            <div><dt>Collision<span class="tier core">Core</span></dt><dd>Two or more frames overlap in time at the same receiver.</dd></div>
+            <div><dt>ALOHA and slotted ALOHA<span class="tier core">Core</span></dt><dd>ALOHA: send whenever you have data; a collision loses the frame. Slotted ALOHA only starts transmissions at fixed slot boundaries, which halves the window for collisions.</dd></div>
+            <div><dt>Capture effect<span class="tier core">Core</span></dt><dd>If one colliding frame is much stronger than the rest, the receiver can still decode it.</dd></div>
+            <div><dt>Capture threshold<span class="tier core">Core</span></dt><dd>ABOT's rule: the strongest frame (by mean RSSI) survives only if it beats the next by at least 6 dB, about 4× the power. Otherwise every colliding frame is lost.</dd></div>
+            <div><dt>Throughput ceiling<span class="tier deep">Deeper</span></dt><dd>Classic slotted ALOHA uses at most about 37% (1/e) of the channel before collisions dominate.</dd></div>
+            <div><dt>Listen-before-talk (CSMA)<span class="tier deep">Deeper</span></dt><dd>The other family of MAC schemes, where radios check the channel before sending. ABOT models ALOHA.</dd></div>
+            <div><dt>Hidden terminal<span class="tier deep">Deeper</span></dt><dd>Two nodes that can't hear each other both send to a node between them and collide there.</dd></div>
+          </dl>
+        </div>
+      </div>
+      <div>
+        <div class="work"><h4>Worked example: the 6 dB rule</h4>
+          <div class="calc">
+            <span>−115 vs −119 dBm → 4 dB apart → both lost</span>
+            <span class="res">−115 vs −122 dBm → 7 dB apart → −115 frame survives</span>
+          </div>
+        </div>
+        <div><h4>In ABOT</h4>
+          <ul class="nums">
+            <li><span class="n">contention on</span><span>Enabled in every reported result, in both simulators.</span></li>
+            <li><span class="n">6 dB</span><span>Capture threshold, judged per receiver.</span></li>
+            <li><span class="n">2.47 s</span><span>Frame length that the reference simulator overlaps in continuous time. The fast backend resolves collisions once per round (card 9).</span></li>
+          </ul>
+        </div>
+        <div><h4>Read in the paper</h4><p class="read">Physical Communication Layer (the slotted ALOHA paragraph); Simulation Backend.</p></div>
+        <div><h4>Look up</h4><p class="read"><span class="q">slotted ALOHA explained</span> <span class="q">capture effect wireless</span> <span class="q">hidden terminal problem</span></p></div>
+        <div class="test"><h4>Check yourself</h4><p>Why does a dense mesh, with about 31 neighbours per node and 2.47 s frames, make collisions a central concern?</p></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- 6 -->
+  <article class="stop" id="s6" data-track="net">
+    <div class="stop-head">
+      <span class="num">6</span>
+      <div><p class="meta"><span>Day 3 · about 1.5 h · Track A</span><a href="#route">↑ map</a></p><h3>Forwarding protocol</h3></div>
+      <label class="donebox"><input type="checkbox" id="done-6" data-stop="6"> Done</label>
+    </div>
+    <p class="lede">Forwarding is the rule a node follows when it hears a packet: pass it on or not, and to whom. ABOT mixes probabilistic broadcast (gossip) with directed hand-offs toward the destination, and adds several brakes so packets don't circulate forever.</p>
+    <div class="cols">
+      <div>
+        <div><h4>Concepts</h4>
+          <dl class="terms">
+            <div><dt>Beaconing<span class="tier core">Core</span></dt><dd>Each node periodically broadcasts a tiny "I'm here" packet, every 30 s. In ABOT a beacon carries only the sender's ID.</dd></div>
+            <div><dt>Header fields<span class="tier core">Core</span></dt><dd>Message ID, source (the previous hop, changes at every relay), destination, origin (the creator, never changes), type, priority, hop count, TTL, timestamp, RSSI, payload size. 34 bytes.</dd></div>
+            <div><dt>Priority<span class="tier core">Core</span></dt><dd>SOS_ALERT carries the highest priority of the five message types.</dd></div>
+            <div><dt>Flooding and broadcast storm<span class="tier core">Core</span></dt><dd>If every node rebroadcasts everything, a dense network drowns in duplicates and collisions.</dd></div>
+            <div><dt>Probabilistic gossip, p<span class="tier core">Core</span></dt><dd>Each node rebroadcasts a new packet with probability p. ABOT: p = 0.75.</dd></div>
+            <div><dt>Counter-based suppression, K<span class="tier core">Core</span></dt><dd>A node waits a random moment before forwarding. If it overhears K = 3 copies first, it cancels its own.</dd></div>
+            <div><dt>TTL (time to live)<span class="tier core">Core</span></dt><dd>A hop limit, decremented at every relay. At zero the packet is dropped. ABOT starts at 16.</dd></div>
+            <div><dt>Duplicate detection<span class="tier core">Core</span></dt><dd>A seen-cache of the last 256 message IDs per node; repeats are ignored.</dd></div>
+            <div><dt>Geo-greedy unicast<span class="tier core">Core</span></dt><dd>Hand the packet to the neighbour geographically closest to the destination.</dd></div>
+            <div><dt>Bimodal gossip<span class="tier deep">Deeper</span></dt><dd>Haas et al. [9] showed gossip either reaches almost every node or dies out early, with a sharp switch near p ≈ 0.6–0.7 in moderately dense networks. 0.75 sits above the switch with margin for sparser, damaged meshes.</dd></div>
+            <div><dt>Greedy voids<span class="tier deep">Deeper</span></dt><dd>A known weakness of geographic forwarding in general: it stalls where no neighbour is closer to the destination.</dd></div>
+          </dl>
+        </div>
+      </div>
+      <div>
+        <div class="work"><h4>Worked example: gossip vs flooding</h4>
+          <div class="calc">
+            <span>30 neighbours hear a new SOS</span>
+            <span>Flooding:    30 rebroadcasts</span>
+            <span class="res">Gossip p=0.75: ≈ 22.5 expected, 25% fewer</span>
+            <span>(suppression at K = 3 trims more)</span>
+          </div>
+        </div>
+        <div><h4>In ABOT</h4>
+          <ul class="nums">
+            <li><span class="n">p 0.75 · K 3</span><span>Gossip settings, chosen from Haas et al.'s threshold.</span></li>
+            <li><span class="n">≈ 25%</span><span>Transmissions saved vs a full flood.</span></li>
+            <li><span class="n">34 B · TTL 16</span><span>Header size and hop limit.</span></li>
+            <li><span class="n">42 B</span><span>Gossip payload: a 2-byte count + 10 entries × 4 bytes, inside the 51-byte MTU. Over 10 entries, the top 10 by magnitude are sent.</span></li>
+            <li><span class="n">256</span><span>Seen-cache entries per node.</span></li>
+          </ul>
+        </div>
+        <div><h4>Read in the paper</h4><p class="read">Proposed System → Packet Format, Forwarding Scheme, Gossip Payload Budget.</p></div>
+        <div><h4>Look up</h4><p class="read"><span class="q">gossip protocol vs flooding</span> <span class="q">broadcast storm problem</span> <span class="q">greedy geographic routing</span></p></div>
+        <div class="test"><h4>Check yourself</h4><p>Name three separate mechanisms that stop an SOS circulating forever, and say what each one limits.</p></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- 7 -->
+  <article class="stop" id="s7" data-track="net">
+    <div class="stop-head">
+      <span class="num">7</span>
+      <div><p class="meta"><span>Day 3 · about 1.5 h · Track A</span><a href="#route">↑ map</a></p><h3>Link-state monitoring</h3></div>
+      <label class="donebox"><input type="checkbox" id="done-7" data-stop="7"> Done</label>
+    </div>
+    <p class="lede">To route well, a node needs to know which links are good right now. ABOT nodes measure this themselves from the beacons they hear, all the time, so routing can steer away from a weakening node before it fails outright.</p>
+    <div class="cols">
+      <div>
+        <div><h4>Concepts</h4>
+          <dl class="terms">
+            <div><dt>Link state<span class="tier core">Core</span></dt><dd>The current quality of each link a node has.</dd></div>
+            <div><dt>PDR estimate<span class="tier core">Core</span></dt><dd>The share of a neighbour's packets that actually arrived.</dd></div>
+            <div><dt>Sliding window<span class="tier core">Core</span></dt><dd>Only the most recent 50 packets count, so old history drops off. At one beacon per 30 s, that's about 25 minutes.</dd></div>
+            <div><dt>Per-neighbour RSSI<span class="tier core">Core</span></dt><dd>How strong each neighbour's frames arrive.</dd></div>
+            <div><dt>Reachability fraction<span class="tier core">Core</span></dt><dd>The share of known neighbours heard recently.</dd></div>
+            <div><dt>Local derivation<span class="tier core">Core</span></dt><dd>Beacons carry only an ID, so the receiver computes all three metrics itself. Measuring costs no extra airtime.</dd></div>
+            <div><dt>Proactive vs reactive<span class="tier core">Core</span></dt><dd>Reactive schemes recompute routes after something breaks. Proactive ones keep state current all the time. ABOT is continuous, which is one of the gaps the paper names.</dd></div>
+            <div><dt>Window trade-off<span class="tier deep">Deeper</span></dt><dd>A long window gives a stable estimate but reacts slowly; a short one reacts fast but is noisy.</dd></div>
+            <div><dt>ETX<span class="tier deep">Deeper</span></dt><dd>Expected transmission count, a classic mesh link metric equal to 1 ÷ delivery ratio. ABOT's routing cost (card 11) is the same idea.</dd></div>
+          </dl>
+        </div>
+      </div>
+      <div>
+        <div class="work"><h4>Worked example: the window</h4>
+          <div class="calc">
+            <span>50 beacons × 30 s = 1,500 s = 25 min</span>
+            <span class="res">Heard 33 of the last 50 → PDR ≈ 0.66</span>
+            <span>Neighbour dies → a simple count drops</span>
+            <span>about 0.02 per missed beacon</span>
+          </div>
+          <p>That slow decay is why a "heard recently" reachability signal complements the PDR window.</p>
+        </div>
+        <div><h4>In ABOT</h4>
+          <ul class="nums">
+            <li><span class="n">3 metrics</span><span>PDR, RSSI, reachability, per node, from beacons alone.</span></li>
+            <li><span class="n">50 packets</span><span>PDR window, about 25 min at the SF12 beacon rate.</span></li>
+            <li><span class="n">continuous</span><span>Updated every beacon, not only on detected failure.</span></li>
+          </ul>
+        </div>
+        <div><h4>Read in the paper</h4><p class="read">Link-State Monitoring Layer; Gap in Literature (the "continuously updated" point).</p></div>
+        <div><h4>Look up</h4><p class="read"><span class="q">link state routing</span> <span class="q">ETX metric wireless mesh</span> <span class="q">proactive vs reactive routing</span></p></div>
+        <div class="test"><h4>Check yourself</h4><p>Explain why a 25-minute window is both a strength and a weakness for a disaster mesh.</p></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- 8 -->
+  <article class="stop" id="s8" data-track="alg">
+    <div class="stop-head">
+      <span class="num">8</span>
+      <div><p class="meta"><span>Day 4 · about 1.5 h · Track B</span><a href="#route">↑ map</a></p><h3>Graphs and shortest paths</h3></div>
+      <label class="donebox"><input type="checkbox" id="done-8" data-stop="8"> Done</label>
+    </div>
+    <p class="lede">Route-finding algorithms see a network as a graph: points joined by lines, each line with a cost. The shortest path is the route with the smallest total cost, so whatever you choose as the cost decides what "shortest" means.</p>
+    <div class="cols">
+      <div>
+        <div><h4>Concepts</h4>
+          <dl class="terms">
+            <div><dt>Graph: vertices and edges<span class="tier core">Core</span></dt><dd>Nodes are vertices; links are edges.</dd></div>
+            <div><dt>Edge weight (cost)<span class="tier core">Core</span></dt><dd>A number on each edge. Hop count gives every edge a cost of 1.</dd></div>
+            <div><dt>Degree<span class="tier core">Core</span></dt><dd>How many neighbours a node has.</dd></div>
+            <div><dt>Dijkstra's algorithm<span class="tier core">Core</span></dt><dd>Grows outward from the start, always settling the cheapest unsettled node next, until it reaches the goal. Finds the cheapest path when costs aren't negative.</dd></div>
+            <div><dt>A* (A-star)<span class="tier core">Core</span></dt><dd>Dijkstra plus a heuristic: a guess of the remaining cost (here straight-line distance), so it explores toward the goal first.</dd></div>
+            <div><dt>Unit-disk graph<span class="tier deep">Deeper</span></dt><dd>Connect any two nodes within radio range. ABOT's grid with a 1500 m range is one.</dd></div>
+            <div><dt>Ties<span class="tier deep">Deeper</span></dt><dd>Several paths can share the lowest cost; which one wins depends on the order nodes are visited. This matters in card 11.</dd></div>
+            <div><dt>Admissible heuristic<span class="tier deep">Deeper</span></dt><dd>A heuristic that never overestimates keeps A*'s answer optimal.</dd></div>
+          </dl>
+        </div>
+      </div>
+      <div>
+        <div class="work"><h4>Worked example: where 30.7 and 44 come from</h4>
+          <div class="calc">
+            <span>Range ÷ spacing = 1500 ÷ 400 = 3.75 grid steps</span>
+            <span class="res">Grid points within 3.75 steps of an interior node: 44</span>
+            <span>Edge and corner nodes have fewer → 10×10 mean 30.7</span>
+          </div>
+          <p>Both match the paper. A 10 × 10 grid at 400 m is 3.6 km across, so with a 1500 m reach most routes need only 2–4 hops and every planner succeeds.</p>
+        </div>
+        <div><h4>In ABOT: the four baselines</h4>
+          <ul class="nums">
+            <li><span class="n">dijkstra_static</span><span>Dijkstra on hop count.</span></li>
+            <li><span class="n">astar_static</span><span>A* on hop count, Euclidean heuristic.</span></li>
+            <li><span class="n">dijkstra_dynamic</span><span>Dijkstra on PDR-weighted costs, with replanning (card 11).</span></li>
+            <li><span class="n">astar_dynamic</span><span>A* on PDR-weighted costs, with replanning.</span></li>
+          </ul>
+        </div>
+        <div><h4>Read in the paper</h4><p class="read">Experimental Results, first paragraph; RL Environment (mean degree 30.7, maximum 44).</p></div>
+        <div><h4>Look up</h4><p class="read"><span class="q">Dijkstra's algorithm explained</span> <span class="q">A* search explained</span></p></div>
+        <div class="test"><h4>Check yourself</h4><p>Draw a 4-node graph and run Dijkstra by hand twice: once with hop counts, once with other costs. Do the routes differ, and why?</p></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- 9 -->
+  <article class="stop" id="s9" data-track="alg">
+    <div class="stop-head">
+      <span class="num">9</span>
+      <div><p class="meta"><span>Day 4 · about 2 h · Track B</span><a href="#route">↑ map</a></p><h3>Simulation methods</h3></div>
+      <label class="donebox"><input type="checkbox" id="done-9" data-stop="9"> Done</label>
+    </div>
+    <p class="lede">Everything in the paper is simulated. The authors started with an event-by-event simulator (SimPy) that was too slow for reinforcement learning, then built a time-stepped backend that computes a whole round of radio outcomes at once. Both share the same protocol, channel, contention and failure models.</p>
+
+    <figure class="fig">
+      <div class="fig-wide">
+        <svg viewBox="0 0 340 176" role="img" aria-label="The reference simulator checks collisions over the true overlap of frames in continuous time; the timestep backend gathers each round's transmissions and resolves them together.">
+          <text class="g-row" x="0" y="14">Reference: event by event</text>
+          <line class="g-axis" x1="0" y1="66" x2="340" y2="66"/>
+          <rect class="g-hit" x="24" y="44" width="44" height="18" rx="3"/>
+          <rect class="g-hit" x="52" y="24" width="44" height="18" rx="3"/>
+          <rect class="g-frame" x="132" y="44" width="44" height="18" rx="3"/>
+          <rect class="g-frame" x="214" y="44" width="44" height="18" rx="3"/>
+          <rect class="g-frame" x="282" y="24" width="44" height="18" rx="3"/>
+          <text class="g-small" x="104" y="37">overlap → capture rule</text>
+          <text class="g-small" x="0" y="82">continuous time; each frame 2.47 s</text>
+
+          <text class="g-row" x="0" y="112">Timestep: one batch per round</text>
+          <line class="g-axis" x1="0" y1="160" x2="340" y2="160"/>
+          <line class="g-tick" x1="60" y1="154" x2="60" y2="166"/>
+          <line class="g-tick" x1="170" y1="154" x2="170" y2="166"/>
+          <line class="g-tick" x1="280" y1="154" x2="280" y2="166"/>
+          <rect class="g-frame" x="38" y="138" width="44" height="14" rx="3"/>
+          <rect class="g-frame" x="38" y="122" width="44" height="14" rx="3"/>
+          <rect class="g-frame" x="148" y="138" width="44" height="14" rx="3"/>
+          <rect class="g-frame" x="258" y="138" width="44" height="14" rx="3"/>
+          <rect class="g-frame" x="258" y="122" width="44" height="14" rx="3"/>
+          <text class="g-small" x="44" y="176">round 1</text>
+          <text class="g-small" x="154" y="176">round 2</text>
+          <text class="g-small" x="264" y="176">round 3</text>
+        </svg>
+      </div>
+      <figcaption>Same capture rule, different time resolution. The reference checks real overlaps between 2.47 s frames, which makes it the harsher of the two; the fast backend resolves each round in one vectorised pass. That's why they agree on which nodes stay alive but not on delivery counts.</figcaption>
+    </figure>
+
+    <div class="cols">
+      <div>
+        <div><h4>Concepts</h4>
+          <dl class="terms">
+            <div><dt>Discrete-event simulation<span class="tier core">Core</span></dt><dd>A queue of timestamped events (frame starts and ends, timers), processed one at a time in continuous time. ABOT's reference backend uses SimPy.</dd></div>
+            <div><dt>Time-stepped simulation<span class="tier core">Core</span></dt><dd>The clock advances in fixed steps and everything due is processed together. One RL step is 10 s.</dd></div>
+            <div><dt>Vectorisation<span class="tier core">Core</span></dt><dd>Computing a whole batch of link outcomes in one array operation instead of a loop. This is where the speed comes from.</dd></div>
+            <div><dt>Monte Carlo evaluation<span class="tier core">Core</span></dt><dd>Run many randomised episodes and study the spread of results.</dd></div>
+            <div><dt>Random seed<span class="tier core">Core</span></dt><dd>Fixes the random draws so different methods face exactly the same scenario.</dd></div>
+            <div><dt>Failure models<span class="tier core">Core</span></dt><dd>Sudden: a Poisson process, random and memoryless, at λ = 1/3600 s⁻¹ (about one failure per node per hour). Graceful: the battery drains linearly over 300 s, and below 20% charge delivery probability scales down by b/0.20. Mixed (50/50) is the default. Burst: everything within one grid cell of an epicentre.</dd></div>
+            <div><dt>Speedup<span class="tier core">Core</span></dt><dd>Wall-clock time of the reference divided by the fast backend's, for the same workload.</dd></div>
+            <div><dt>Backend equivalence<span class="tier core">Core</span></dt><dd>Do both simulators produce the same distribution of results? Tested with the KS test (card 10).</dd></div>
+            <div><dt>Fidelity vs speed<span class="tier deep">Deeper</span></dt><dd>Coarser timing buys speed at the cost of exact collision behaviour.</dd></div>
+            <div><dt>Sim-to-real gap<span class="tier deep">Deeper</span></dt><dd>Anything not modelled, such as hardware quirks, real terrain or duty-cycle enforcement, can change results on real devices.</dd></div>
+          </dl>
+        </div>
+      </div>
+      <div>
+        <div><h4>In ABOT</h4>
+          <ul class="nums">
+            <li><span class="n">7.3×</span><span>Speedup with contention on, the setting behind every result.</span></li>
+            <li><span class="n">303×</span><span>Speedup with contention off.</span></li>
+            <li><span class="n">λ sweep</span><span>Failure rates {0, 1/3600, 1/1800} s⁻¹ move neither figure.</span></li>
+            <li><span class="n">p = 0.98</span><span>KS test, alive-node count: indistinguishable.</span></li>
+            <li><span class="n">p &lt; 10⁻³</span><span>KS test, PDR and delivery count: different.</span></li>
+            <li><span class="n">100 → 900</span><span>Nodes: 10 × 10 for the main results, up to 30 × 30 for scalability.</span></li>
+          </ul>
+        </div>
+        <div class="scope">
+          <div class="yes"><b>Shows</b>The fast backend is quick enough for RL and matches the reference on node survival, which is what the agent trains against.</div>
+          <div class="no"><b>Doesn't show</b>Speed against other simulators (the comparison is with the authors' own reference), or matching absolute traffic under contention.</div>
+        </div>
+        <div><h4>Read in the paper</h4><p class="read">Simulation Backend; Battery and Failure Model; Experimental Results, first sentence.</p></div>
+        <div><h4>Look up</h4><p class="read"><span class="q">discrete event simulation</span> <span class="q">Poisson process explained</span> <span class="q">numpy vectorization</span></p></div>
+        <div class="test"><h4>Check yourself</h4><p>Why do the two backends agree on which nodes stay alive but disagree on how many packets get through?</p></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- 10 -->
+  <article class="stop" id="s10" data-track="alg">
+    <div class="stop-head">
+      <span class="num">10</span>
+      <div><p class="meta"><span>Day 5 · about 1.5 h · Track B</span><a href="#route">↑ map</a></p><h3>Evaluation statistics</h3></div>
+      <label class="donebox"><input type="checkbox" id="done-10" data-stop="10"> Done</label>
+    </div>
+    <p class="lede">Results are distributions over many random episodes, so the paper uses statistics to judge whether a difference is real and how big it is. It uses rank-based (non-parametric) tools because step counts are small whole numbers with no bell curve.</p>
+    <div class="cols">
+      <div>
+        <div><h4>Concepts</h4>
+          <dl class="terms">
+            <div><dt>Median and IQR<span class="tier core">Core</span></dt><dd>The middle value, and the range of the middle half. "3 [2, 3]" means median 3 steps, middle half between 2 and 3. Robust to a few extreme runs.</dd></div>
+            <div><dt>Ceiling effect<span class="tier core">Core</span></dt><dd>Every agent reaches a safe zone about 100% of the time, so success can't separate them. They're compared on steps.</dd></div>
+            <div><dt>p-value<span class="tier core">Core</span></dt><dd>How likely a difference this big would be by chance if the methods were really equal. Below 0.05 is the usual bar.</dd></div>
+            <div><dt>Significance vs size<span class="tier core">Core</span></dt><dd>Significant means unlikely to be chance, not large or important.</dd></div>
+            <div><dt>Mann–Whitney U<span class="tier core">Core</span></dt><dd>Compares two groups by ranking all values together. No bell-curve assumption.</dd></div>
+            <div><dt>Rank-biserial r<sub>rb</sub><span class="tier core">Core</span></dt><dd>Effect size for Mann–Whitney, from −1 to +1. In Table II, negative favours PPO.</dd></div>
+            <div><dt>Multiple comparisons, Holm<span class="tier core">Core</span></dt><dd>More tests mean more lucky hits. Holm–Bonferroni raises the bar step by step; p<sub>corr</sub> is the corrected value.</dd></div>
+            <div><dt>Kolmogorov–Smirnov (KS)<span class="tier core">Core</span></dt><dd>Compares two whole distributions by the largest gap between their cumulative curves. Used for backend equivalence.</dd></div>
+            <div><dt>Confidence interval<span class="tier core">Core</span></dt><dd>A range that very likely contains the true value, usually 95%.</dd></div>
+            <div><dt>Pearson r<span class="tier core">Core</span></dt><dd>How closely two quantities move together. Reward vs path length: −0.987 to −0.993, so steps is the primary metric.</dd></div>
+            <div><dt>Bootstrap<span class="tier deep">Deeper</span></dt><dd>Resample the data with replacement thousands of times to see how much an estimate wobbles.</dd></div>
+            <div><dt>Matched design<span class="tier deep">Deeper</span></dt><dd>Giving both arms the same seeds removes scenario luck from the comparison.</dd></div>
+          </dl>
+        </div>
+      </div>
+      <div>
+        <div class="work"><h4>Worked example: Holm vs Bonferroni</h4>
+          <div class="calc">
+            <span>Three tests, sorted: p = 0.010, 0.020, 0.040</span>
+            <span>Holm bars:  0.05/3, 0.05/2, 0.05/1</span>
+            <span>          = 0.0167, 0.025, 0.05 → all three pass</span>
+            <span class="res">Bonferroni: 0.0167 for each → only the first passes</span>
+          </div>
+        </div>
+        <div><h4>Table II, row by row</h4>
+          <ul class="nums">
+            <li><span class="n">−0.358 · 2.5×10⁻⁵</span><span>10 × 10: PPO takes fewer steps than dijkstra_dynamic. Medium effect, essentially not chance.</span></li>
+            <li><span class="n">+0.184 · 0.047</span><span>10 × 10: PPO takes slightly more steps than the three fastest planners. Small effect, just under the bar.</span></li>
+            <li><span class="n">−0.281 · 1.9×10⁻³</span><span>15 × 15: PPO again beats dijkstra_dynamic.</span></li>
+            <li><span class="n">+0.137 · 0.255</span><span>15 × 15: no detectable difference from the three fastest planners.</span></li>
+          </ul>
+        </div>
+        <div><h4>Read in the paper</h4><p class="read">Table II and the paragraph before it; Experimental Results, first paragraph; Simulation Backend (the KS tests).</p></div>
+        <div><h4>Look up</h4><p class="read"><span class="q">Mann-Whitney U test</span> <span class="q">Holm-Bonferroni</span> <span class="q">Kolmogorov-Smirnov test</span></p></div>
+        <div class="test"><h4>Check yourself</h4><p>Why medians and Mann–Whitney instead of means and a t-test for these step counts?</p></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- 11 -->
+  <article class="stop" id="s11" data-key>
+    <div class="stop-head">
+      <span class="num">11</span>
+      <div><p class="meta"><span>Day 5 · about 2 h</span><span class="badge">★ Main result</span><a href="#route">↑ map</a></p><h3>Link-aware routing: the ablation</h3></div>
+      <label class="donebox"><input type="checkbox" id="done-11" data-stop="11"> Done</label>
+    </div>
+    <p class="lede">The paper's central technical claim: putting live link quality into the route-finder's edge costs is what improves delivery. It is tested by ablation: the same Dijkstra planner, same seeds, same simulator, with and without live PDR in its costs.</p>
+
+    <figure class="fig">
+      <div class="fig-pair">
+        <div class="panel">
+          <h5>Static: fewest hops</h5>
+          <svg viewBox="0 0 300 168" role="img" aria-label="Hop-count routing picks the one-hop direct link S to R, which has PDR 0.2.">
+            <line class="g-pick" x1="40" y1="128" x2="260" y2="128"/>
+            <line class="g-edge" x1="40" y1="128" x2="260" y2="128"/>
+            <line class="g-edge" x1="40" y1="128" x2="150" y2="40"/>
+            <line class="g-edge" x1="150" y1="40" x2="260" y2="128"/>
+            <circle class="g-node" cx="40" cy="128" r="17"/><text class="g-lab" x="40" y="133" text-anchor="middle">S</text>
+            <circle class="g-node" cx="150" cy="40" r="17"/><text class="g-lab" x="150" y="45" text-anchor="middle">A</text>
+            <circle class="g-node" cx="260" cy="128" r="17"/><text class="g-lab" x="260" y="133" text-anchor="middle">R</text>
+            <text class="g-num" x="150" y="156" text-anchor="middle">PDR 0.2</text>
+            <text class="g-num" x="80" y="74" text-anchor="middle">0.9</text>
+            <text class="g-num" x="220" y="74" text-anchor="middle">0.8</text>
+          </svg>
+          <p>Picks S→R: 1 hop, link PDR 0.2.</p>
+        </div>
+        <div class="panel">
+          <h5>Dynamic: cost = 1 / PDR</h5>
+          <svg viewBox="0 0 300 168" role="img" aria-label="PDR-weighted routing picks S to A to R, two hops with link PDRs 0.9 and 0.8, because its cost 2.36 is lower than the direct link's 5.0.">
+            <line class="g-pick" x1="40" y1="128" x2="150" y2="40"/>
+            <line class="g-pick" x1="150" y1="40" x2="260" y2="128"/>
+            <line class="g-edge" x1="40" y1="128" x2="260" y2="128"/>
+            <line class="g-edge" x1="40" y1="128" x2="150" y2="40"/>
+            <line class="g-edge" x1="150" y1="40" x2="260" y2="128"/>
+            <circle class="g-node" cx="40" cy="128" r="17"/><text class="g-lab" x="40" y="133" text-anchor="middle">S</text>
+            <circle class="g-node" cx="150" cy="40" r="17"/><text class="g-lab" x="150" y="45" text-anchor="middle">A</text>
+            <circle class="g-node" cx="260" cy="128" r="17"/><text class="g-lab" x="260" y="133" text-anchor="middle">R</text>
+            <text class="g-num" x="150" y="156" text-anchor="middle">cost 5.0</text>
+            <text class="g-num" x="70" y="74" text-anchor="middle">1.11</text>
+            <text class="g-num" x="230" y="74" text-anchor="middle">1.25</text>
+          </svg>
+          <p>S→A→R costs 1.11 + 1.25 = 2.36 &lt; 5.0. Picks 2 hops, link PDRs 0.9 and 0.8.</p>
+        </div>
+      </div>
+      <figcaption>Toy example with made-up numbers. Live PDR makes the planner take an extra hop over much better links. This is the paper's result in miniature: dijkstra_dynamic takes longer paths (3.23 vs 2.17 steps), but the links it uses deliver about 1.8× better.</figcaption>
+    </figure>
+
+    <div class="cols">
+      <div>
+        <div><h4>Concepts</h4>
+          <dl class="terms">
+            <div><dt>Static cost<span class="tier core">Core</span></dt><dd>Hop count. Every link looks equal, however weak.</dd></div>
+            <div><dt>PDR-weighted cost<span class="tier core">Core</span></dt><dd>Weaker links cost more. The implementation uses 1 ÷ PDR, so a PDR 0.5 link costs twice a perfect one.</dd></div>
+            <div><dt>Replanning trigger<span class="tier core">Core</span></dt><dd>The dynamic planners recompute if a planned hop dies, or its PDR falls below 0.5, within the next 3 hops.</dd></div>
+            <div><dt>Empty first snapshot<span class="tier core">Core</span></dt><dd>Both dynamic planners plan their first route before any link data exists, so every edge looks equal. Any gain has to come from replanning.</dd></div>
+            <div><dt>Ablation<span class="tier core">Core</span></dt><dd>Remove one ingredient, keep everything else fixed, measure the change. Here the ingredient is live PDR in the cost.</dd></div>
+            <div><dt>Mean link PDR<span class="tier core">Core</span></dt><dd>The outcome measure: average PDR of the links a route actually used.</dd></div>
+            <div><dt>Matched subset<span class="tier core">Core</span></dt><dd>Keep only the 43 seeds where both arms planned the identical first route, so replanning is the only difference.</dd></div>
+            <div><dt>Path-length confound<span class="tier deep">Deeper</span></dt><dd>The dynamic planner takes longer routes and PDR falls with path length, so the raw ratio understates the gain. Matching on steps widens it to 1.9–2.6×.</dd></div>
+            <div><dt>Fidelity check<span class="tier deep">Deeper</span></dt><dd>The paper's "identical on all 100" means the static planners took exactly the same steps re-run on the fast backend as on the reference. It does not mean static and dynamic take equal steps (2.17 vs 3.23).</dd></div>
+            <div><dt>Tie-breaking<span class="tier deep">Deeper</span></dt><dd>Equal-cost paths are resolved by the iteration order of an unordered set, which depends on Python's hash seed. Over 8 seeds, dijkstra_dynamic's PDR ranges 0.264–0.294.</dd></div>
+            <div><dt>Why the A* pair is out of scope<span class="tier deep">Deeper</span></dt><dd>Its trigger fired in 3 of 100 episodes; both arms planned the same first route in all 100 and the same realised path in 97. A ratio of 1.03× (p = 0.886) is evidence neither way.</dd></div>
+          </dl>
+        </div>
+      </div>
+      <div>
+        <div><h4>In ABOT</h4>
+          <ul class="nums">
+            <li><span class="n">0.267 vs 0.145</span><span>Mean link PDR, dynamic vs static Dijkstra. ≈1.8–1.9× at intact through heavy, ≈1.5× at severe and extreme.</span></li>
+            <li><span class="n">1.50×</span><span>The 43-seed subset: 0.3098 vs 0.2067, p = 0.0057, r<sub>rb</sub> = −0.346. The cleanest number.</span></li>
+            <li><span class="n">3.23 vs 2.17</span><span>Mean steps, dynamic vs the fastest planners. The price of better links.</span></li>
+            <li><span class="n">0.28 → 0.218</span><span>dijkstra_dynamic's PDR is flat from intact to heavy, then drops 23% in one step at severe (0.216 at extreme). Other agents move less than 0.02.</span></li>
+          </ul>
+        </div>
+        <div class="scope">
+          <div class="yes"><b>Shows</b>In simulation, live link state is where the delivery gain comes from.</div>
+          <div class="no"><b>Doesn't show</b>The gain on hardware, or that learning (PPO) or gossip adds to it.</div>
+        </div>
+        <div><h4>Read in the paper</h4><p class="read">Experimental Results → Communication-Aware Ablation; Damage Severity Sweep, first paragraph; Conclusion.</p></div>
+        <div><h4>Look up</h4><p class="read"><span class="q">ablation study meaning</span> <span class="q">ETX routing metric</span></p></div>
+        <div class="test"><h4>Check yourself</h4><p>Explain why the 43-seed subset is the cleanest test, and why the A* pair can't count as evidence either way.</p></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- 12 -->
+  <article class="stop" id="s12" data-track="learn">
+    <div class="stop-head">
+      <span class="num">12</span>
+      <div><p class="meta"><span>Day 6 · about 2 h · RL extension</span><a href="#route">↑ map</a></p><h3>Reinforcement learning fundamentals</h3></div>
+      <label class="donebox"><input type="checkbox" id="done-12" data-stop="12"> Done</label>
+    </div>
+    <p class="lede">Reinforcement learning (RL) trains an agent by trial and error. At each step the agent observes its environment, picks an action and receives a reward. Over many episodes it learns a policy that maximises total reward. In ABOT the agent decides which neighbour to hand a message to next.</p>
+    <div class="cols">
+      <div>
+        <div><h4>Concepts</h4>
+          <dl class="terms">
+            <div><dt>Agent and environment<span class="tier core">Core</span></dt><dd>ABOT's environment wraps the mesh simulator behind the standard Gymnasium interface: reset() starts an episode, step(action) advances it.</dd></div>
+            <div><dt>State vs observation<span class="tier core">Core</span></dt><dd>The state is everything about the world; the observation is what the agent actually sees. ABOT's agent sees 24 local numbers.</dd></div>
+            <div><dt>Action<span class="tier core">Core</span></dt><dd>What the agent may do each step: pick one of 8 neighbour slots.</dd></div>
+            <div><dt>Reward and return<span class="tier core">Core</span></dt><dd>Reward is the per-step score; return is the total over an episode.</dd></div>
+            <div><dt>Episode<span class="tier core">Core</span></dt><dd>One attempt, from reset until a safe zone is reached or 200 steps pass.</dd></div>
+            <div><dt>Discount factor γ<span class="tier core">Core</span></dt><dd>How much future rewards count. With γ = 0.99, a reward 100 steps away still counts about 37% (0.99¹⁰⁰ ≈ 0.37).</dd></div>
+            <div><dt>Policy π<span class="tier core">Core</span></dt><dd>The learned rule mapping observations to actions.</dd></div>
+            <div><dt>Value V(s) and Q(s, a)<span class="tier core">Core</span></dt><dd>V is the expected return from a state. Q is the expected return from taking action a in state s.</dd></div>
+            <div><dt>Exploration vs exploitation<span class="tier core">Core</span></dt><dd>Try new actions to learn, or use what already works.</dd></div>
+            <div><dt>Reward shaping<span class="tier core">Core</span></dt><dd>Intermediate rewards that guide learning toward the real goal.</dd></div>
+            <div><dt>MDP and POMDP<span class="tier deep">Deeper</span></dt><dd>The formal model: states, actions, transitions, rewards. Partially observable when the agent sees only part of the state, as here.</dd></div>
+            <div><dt>Deterministic evaluation<span class="tier deep">Deeper</span></dt><dd>Training samples actions with randomness; evaluation can always take the single most likely action. This matters for the livelock (card 14).</dd></div>
+            <div><dt>Paper vs implementation<span class="tier deep">Deeper</span></dt><dd>The paper says "+5 per new SOS delivered". The implementation gives +5 at most once per step if any new SOS was delivered.</dd></div>
+          </dl>
+        </div>
+      </div>
+      <div>
+        <div class="work"><h4>Worked example: why reward tracks steps</h4>
+          <div class="calc">
+            <span>Hypothetical: 3 steps, link PDR 0.3, SOS delivered</span>
+            <span>+100 − 3 × 1 − 0.5 × 3 × (1 − 0.3) + 5</span>
+            <span class="res">= 100 − 3 − 1.05 + 5 = 100.95</span>
+          </div>
+          <p>The +100 dominates and each extra step costs about 1–1.5 points, so reward is almost a function of path length (Pearson r −0.987 to −0.993). That's why steps-to-safe-zone is the primary metric.</p>
+        </div>
+        <div><h4>In ABOT: the reward</h4>
+          <ul class="nums">
+            <li><span class="n">+100</span><span>Reaching a safe zone (terminal bonus).</span></li>
+            <li><span class="n">−1</span><span>Each step.</span></li>
+            <li><span class="n">−20</span><span>Zero reachable neighbours, or choosing a dead or missing neighbour.</span></li>
+            <li><span class="n">+5</span><span>New SOS delivered.</span></li>
+            <li><span class="n">−0.5·(1 − PDR)</span><span>Each step, at the current node's PDR. A soft preference, scaled below the step cost.</span></li>
+            <li><span class="n">10 s · 200</span><span>Seconds per step; step cap (2,000 s ≈ 33 min). SOS every 10 steps, gossip every 5, beacons every 3. Two safe zones.</span></li>
+          </ul>
+        </div>
+        <div><h4>Read in the paper</h4><p class="read">Proposed System → RL Environment; Experimental Results, first paragraph.</p></div>
+        <div><h4>Look up</h4><p class="read"><span class="q">reinforcement learning basics</span> <span class="q">Markov decision process</span> <span class="q">discount factor RL</span></p></div>
+        <div class="test"><h4>Check yourself</h4><p>Why are the two −20 penalties set equal, and why is the link-quality term kept smaller than the step cost?</p></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- 13 -->
+  <article class="stop" id="s13" data-track="learn">
+    <div class="stop-head">
+      <span class="num">13</span>
+      <div><p class="meta"><span>Day 6 · about 2 h · RL extension</span><a href="#route">↑ map</a></p><h3>PPO and how it was trained</h3></div>
+      <label class="donebox"><input type="checkbox" id="done-13" data-stop="13"> Done</label>
+    </div>
+    <p class="lede">PPO (Proximal Policy Optimization) is a widely used RL algorithm. It trains two neural networks side by side: an actor that picks actions and a critic that estimates how good situations are. It caps how far each update can move the policy, which keeps training stable.</p>
+    <div class="cols">
+      <div>
+        <div><h4>Concepts</h4>
+          <dl class="terms">
+            <div><dt>MLP policy<span class="tier core">Core</span></dt><dd>A small neural network: 2 hidden layers of 64 tanh units.</dd></div>
+            <div><dt>Policy gradient<span class="tier core">Core</span></dt><dd>Raise the probability of actions that did better than expected; lower the rest.</dd></div>
+            <div><dt>Actor-critic<span class="tier core">Core</span></dt><dd>The actor is the policy. The critic estimates V(s) so the actor knows what "better than expected" means.</dd></div>
+            <div><dt>Advantage<span class="tier core">Core</span></dt><dd>How much better an action turned out than the critic predicted.</dd></div>
+            <div><dt>Clipping (0.2)<span class="tier core">Core</span></dt><dd>Limits each update to roughly a ±20% change in action probabilities. This is the "proximal" in PPO.</dd></div>
+            <div><dt>Entropy bonus (0.01)<span class="tier core">Core</span></dt><dd>A small reward for staying random, which keeps the agent exploring.</dd></div>
+            <div><dt>Rollout, minibatch, epochs<span class="tier core">Core</span></dt><dd>Collect experience, then make several learning passes over it in small chunks before collecting more.</dd></div>
+            <div><dt>Parallel environments<span class="tier core">Core</span></dt><dd>7 copies of the environment in one process, each contributing 200 steps per rollout.</dd></div>
+            <div><dt>Explained variance<span class="tier core">Core</span></dt><dd>How much of the variation in real returns the critic predicts. 1 is perfect, 0 is no better than predicting the average, negative is worse than that.</dd></div>
+            <div><dt>GAE λ (0.95)<span class="tier deep">Deeper</span></dt><dd>Generalised advantage estimation blends short- and long-horizon advantage estimates, trading bias against noise.</dd></div>
+            <div><dt>Learning rate (3 × 10⁻⁴)<span class="tier deep">Deeper</span></dt><dd>Step size for each network update.</dd></div>
+            <div><dt>Default hyperparameters<span class="tier deep">Deeper</span></dt><dd>All are Stable-Baselines3 defaults, not tuned. Tuning is untested.</dd></div>
+            <div><dt>On-policy<span class="tier deep">Deeper</span></dt><dd>PPO learns only from fresh data gathered by its current policy, so it needs a lot of simulation. Hence the fast backend.</dd></div>
+            <div><dt>Which model was evaluated<span class="tier deep">Deeper</span></dt><dd>The baseline comparison and severity sweep used the seed-0 model, according to the result files; the paper doesn't say. All 3 seeds appear in training and the gossip ablation.</dd></div>
+          </dl>
+        </div>
+      </div>
+      <div>
+        <div class="work"><h4>Worked example: training arithmetic</h4>
+          <div class="calc">
+            <span>7 envs × 200 steps = 1,400 transitions per update</span>
+            <span>200,000 ÷ 1,400 ≈ 143 updates per seed</span>
+            <span class="res">1,400 ÷ 64 ≈ 22 minibatches × 10 epochs ≈ 220 gradient steps per update</span>
+          </div>
+        </div>
+        <div><h4>In ABOT</h4>
+          <ul class="nums">
+            <li><span class="n">3 × 200k</span><span>Three seeds, 200,000 steps each summed across the 7 workers, on CPU.</span></li>
+            <li><span class="n">γ 0.99 · λ 0.95</span><span>Discount and GAE settings.</span></li>
+            <li><span class="n">clip 0.2 · ent 0.01</span><span>Update cap and exploration bonus.</span></li>
+            <li><span class="n">−0.67, 0.18, 0.71</span><span>Final explained variance per seed. One critic is worse than guessing the average, one is weak, one is decent: not converged for at least one seed. A stated limitation.</span></li>
+          </ul>
+        </div>
+        <div><h4>Read in the paper</h4><p class="read">Proposed System → RL Environment (training paragraph); Limitations → Value convergence.</p></div>
+        <div><h4>Look up</h4><p class="read"><span class="q">PPO explained intuition</span> <span class="q">actor critic explained</span> <span class="q">explained variance RL</span></p></div>
+        <div class="test"><h4>Check yourself</h4><p>What does an explained variance of −0.67 say about that run's critic, and how would a poor critic affect the actor's updates?</p></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- 14 -->
+  <article class="stop" id="s14" data-track="learn">
+    <div class="stop-head">
+      <span class="num">14</span>
+      <div><p class="meta"><span>Day 7 · about 2.5 h · RL extension</span><a href="#route">↑ map</a></p><h3>ABOT's RL design and its failure modes</h3></div>
+      <label class="donebox"><input type="checkbox" id="done-14" data-stop="14"> Done</label>
+    </div>
+    <p class="lede">How ABOT turns routing into an RL problem, and where that design holds the agent back: what it sees, what it can choose, and two asymmetries that both favour the classical planners.</p>
+    <div class="cols">
+      <div>
+        <div><h4>The 24-number observation</h4>
+          <ul class="obs">
+            <li><b>9</b><span>Base: normalised x and y; local PDR; reachable-neighbour count; battery; distance to the nearest safe zone; cosine and sine of the bearing to it; elapsed fraction of the episode.</span></li>
+            <li><b>8</b><span>Neighbour PDRs, sorted by node ID.</span></li>
+            <li><b>7</b><span>Extras: unit vector to the nearest alive gateway (x, y); hop count to it; local node density; PDR trend; minimum neighbour PDR; maximum neighbour RSSI.</span></li>
+          </ul>
+        </div>
+        <div><h4>Concepts</h4>
+          <dl class="terms">
+            <div><dt>Discrete(8) action space<span class="tier core">Core</span></dt><dd>Each action indexes the ID-sorted neighbour list.</dd></div>
+            <div><dt>Action-space truncation<span class="tier core">Core</span></dt><dd>8 slots against a mean of 30.7 neighbours (maximum 44). Most neighbours are unreachable as choices.</dd></div>
+            <div><dt>Invalid action<span class="tier core">Core</span></dt><dd>Choosing a dead or missing neighbour: −20, and the agent stays where it is.</dd></div>
+            <div><dt>Two asymmetries<span class="tier core">Core</span></dt><dd>The planners get a global network snapshot; PPO gets only its local observation. The planners may pick any neighbour; PPO picks from 8 slots. Both favour the planners, so PPO's result is a lower bound.</dd></div>
+            <div><dt>Livelock<span class="tier core">Core</span></dt><dd>A loop where the agent keeps acting but makes no progress. See the cycle on the right.</dd></div>
+            <div><dt>Action masking<span class="tier core">Core</span></dt><dd>Remove invalid actions from the choice set before the policy picks. The standard fix, along with a variable-size neighbour set.</dd></div>
+            <div><dt>Addressable but unobservable<span class="tier deep">Deeper</span></dt><dd>Indices must survive node failures, so dead neighbours stay in the action list. In the implementation, the neighbour-PDR slots are filled from neighbours actually heard, so after failures slot i and action i can be different nodes.</dd></div>
+            <div><dt>Q-value gossip<span class="tier deep">Deeper</span></dt><dd>Carries the critic's V(s) per node (the code calls it a "Q-table"). Encoded as a 16-bit node index plus a 16-bit quantised value, top 10 by magnitude, 42 bytes, flooded with TTL 4.</dd></div>
+            <div><dt>Merge rule (not wired)<span class="tier deep">Deeper</span></dt><dd>Q<sub>new</sub> = (1 − α)·Q<sub>local</sub> + α·Q<sub>received</sub>, α = 0.3: a moving average. Implemented but not connected to the receive path, so the ablation tests transport cost only.</dd></div>
+            <div><dt>GossipCallback<span class="tier deep">Deeper</span></dt><dd>During training, averages value estimates across the 7 workers between PPO updates.</dd></div>
+          </dl>
+        </div>
+      </div>
+      <div>
+        <div class="work"><h4>The livelock, as a loop</h4>
+          <ol class="cycle">
+            <li>The agent observes its situation.</li>
+            <li>The deterministic policy picks action 0.</li>
+            <li>Action 0's neighbour is dead: rejected, −20, the agent doesn't move.</li>
+            <li>The next observation is almost identical.</li>
+            <li class="back">Back to step 1. The isolation penalty doesn't fire (other neighbours are alive) and no gateway is reached, so nothing breaks the loop.</li>
+          </ol>
+          <p class="note">It shows up in one seed block at every severity level, so it comes from the action-space design, not from damage.</p>
+        </div>
+        <div><h4>In ABOT</h4>
+          <ul class="nums">
+            <li><span class="n">3 [2, 3]</span><span>PPO median steps at 10 × 10, vs 2 [2, 3] for the three fastest planners and 3 [2, 4] for dijkstra_dynamic.</span></li>
+            <li><span class="n">4 [3, 4.25]</span><span>PPO at 15 × 15, vs 3 [2, 4] and 4 [3, 6].</span></li>
+            <li><span class="n">0.996 vs 1.000</span><span>PPO success at every severity preset vs the classical planners.</span></li>
+            <li><span class="n">≈ 16.9 / 22.9</span><span>Seed-3 block mean reward (intact–heavy / severe–extreme), against 101.4–102.2 for the other four blocks. Sweep means 84.6 / 86.0; median 101.5.</span></li>
+            <li><span class="n">2.487 vs 2.497</span><span>Steps, gossip on vs off (p = 0.842). Reward 101.42 vs 101.27 (p = 0.826). No difference.</span></li>
+          </ul>
+        </div>
+        <div class="scope">
+          <div class="yes"><b>Shows</b>The simulator can train an agent that solves the task, with a narrow claim: PPO beats dijkstra_dynamic at both scales.</div>
+          <div class="no"><b>Doesn't show</b>That RL beats classical routing, or that gossip helps.</div>
+        </div>
+        <div><h4>Read in the paper</h4><p class="read">Routing and Evacuation Layer; RL Environment (action space); Q-value Gossip and its ablation; Baseline Comparison; Damage Severity Sweep; Limitations → Action-space truncation.</p></div>
+        <div><h4>Look up</h4><p class="read"><span class="q">action masking reinforcement learning</span> <span class="q">partially observable MDP</span></p></div>
+        <div class="test"><h4>Check yourself</h4><p>Walk through the livelock as a loop, then name two design changes that would break it.</p></div>
+      </div>
+    </div>
+  </article>
+
+  </div>
+</section>
+
+<footer>
+  <p>Numbers come from the camera-ready paper. Worked examples are calculated from the paper's formula and Table I; toy examples are labelled as such.</p>
+  <p>Your ticks are saved in this browser only.</p>
+</footer>
+
+</div>
+
+<script>
+(function () {
+  var KEY = 'abot-study-route-tech-v1';
+  var state = {};
+  try { state = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { state = {}; }
+  var boxes = document.querySelectorAll('input[data-stop]');
+  var total = boxes.length;
+
+  function paint() {
+    var n = 0;
+    boxes.forEach(function (b) {
+      var id = b.getAttribute('data-stop');
+      var on = !!state[id];
+      b.checked = on;
+      if (on) n++;
+      var card = document.getElementById('s' + id);
+      if (card) card.classList.toggle('is-done', on);
+      document.querySelectorAll('[data-node="' + id + '"]').forEach(function (el) { el.classList.toggle('is-done', on); });
+    });
+    document.getElementById('prog-text').textContent = n + ' of ' + total + ' concepts done';
+    document.getElementById('prog-bar').style.width = (100 * n / total) + '%';
+  }
+
+  boxes.forEach(function (b) {
+    b.addEventListener('change', function () {
+      state[b.getAttribute('data-stop')] = b.checked;
+      try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+      paint();
+    });
+  });
+  paint();
+})();
+</script>

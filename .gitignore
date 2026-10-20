@@ -1,0 +1,15 @@
+# Machine-specific Claude Code settings (code-dir path etc.), written by .claude/hooks/setup_machine.py
+.claude/settings.local.json
+
+# Office lock and temp files
+~$*
+*.tmp
+
+# Python
+__pycache__/
+*.pyc
+
+# OS clutter
+.DS_Store
+Thumbs.db
+desktop.ini

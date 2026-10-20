@@ -1,0 +1,982 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ABOT Results Explained</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..800&family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/* Layout: one reading column. Each result is a card that runs test, outcome, meaning, care, and
+   then a highlighted "project files only" block. The slide kit below pairs each figure with a verdict.
+   Palette and type follow the study and red-team pages, so the prep pages read as one set. */
+:root {
+  --bg: #F2F5F6;
+  --surface: #FFFFFF;
+  --ink: #13202A;
+  --muted: #566874;
+  --rule: #D5DDE2;
+  --rule-strong: #8C9EA9;
+  --net: #0B717C;          /* links, focus, "make new" verdict */
+  --net-soft: #E0F0F1;
+  --proj: #8A5800;         /* project-files-only highlight */
+  --proj-soft: #FBF0D9;
+  --proj-edge: #E6C47E;
+  --learn: #4D57A3;        /* "fix first" verdict */
+  --learn-soft: #E8EAF6;
+  --sos: #BF3B25;          /* don't use; weakness */
+  --sos-soft: #FBE8E3;
+  --done: #2B7A4B;         /* use; helps your case */
+  --done-soft: #E2F1E7;
+  --s-dyn: #2a78d6;        /* chart: planner that uses live link scores */
+  --s-ppo: #eb6834;        /* chart: PPO */
+  --s-base: #7A8A95;       /* chart: everything else, for context */
+  --shadow: 0 1px 2px rgba(19, 32, 42, .06), 0 10px 28px rgba(19, 32, 42, .10);
+  --mat: #FFFFFF;          /* frame behind the white figure PNGs, same in both themes */
+  --f-display: "Archivo", "Arial Narrow", Arial, sans-serif;
+  --f-body: "Public Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D151B; --surface: #142028; --ink: #E1E8EC; --muted: #98A9B4;
+    --rule: #26353F; --rule-strong: #546976;
+    --net: #55BFC9; --net-soft: #12313A;
+    --proj: #E8BD68; --proj-soft: #2E2410; --proj-edge: #6B5420;
+    --learn: #9DA6F0; --learn-soft: #1D2343;
+    --sos: #FF876A; --sos-soft: #3A1D17;
+    --done: #6FCC94; --done-soft: #143222;
+    --s-dyn: #3987e5; --s-ppo: #d95926; --s-base: #6E808C;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .35), 0 10px 28px rgba(0, 0, 0, .4);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D151B; --surface: #142028; --ink: #E1E8EC; --muted: #98A9B4;
+  --rule: #26353F; --rule-strong: #546976;
+  --net: #55BFC9; --net-soft: #12313A;
+  --proj: #E8BD68; --proj-soft: #2E2410; --proj-edge: #6B5420;
+  --learn: #9DA6F0; --learn-soft: #1D2343;
+  --sos: #FF876A; --sos-soft: #3A1D17;
+  --done: #6FCC94; --done-soft: #143222;
+  --s-dyn: #3987e5; --s-ppo: #d95926; --s-base: #6E808C;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .35), 0 10px 28px rgba(0, 0, 0, .4);
+  color-scheme: dark;
+}
+
+/* ---------- base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 1rem; line-height: 1.6; overflow-wrap: break-word; }
+[hidden] { display: none !important; }
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--net); text-decoration-thickness: 1px; text-underline-offset: .18em; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 2px solid var(--net); outline-offset: 2px; border-radius: 4px; }
+[id] { scroll-margin-top: 1rem; }
+p, ul, ol, dl, figure { margin: 0; }
+h1, h2, h3, h4 { margin: 0; text-wrap: balance; }
+strong { font-weight: 700; }
+code { font-family: var(--f-mono); font-size: .84em; background: var(--bg); border: 1px solid var(--rule); border-radius: 4px; padding: .02em .3em; overflow-wrap: anywhere; }
+.lbl { font-family: var(--f-mono); font-size: .72rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.num { font-variant-numeric: tabular-nums; }
+
+.page { max-width: 58rem; margin-inline: auto; padding-block: 2.2rem 4rem; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 3.2rem; }
+.page > * { min-width: 0; }
+.prose { display: grid; gap: .85rem; max-width: 44rem; }
+.prose ul, .prose ol { padding-left: 1.2rem; display: grid; gap: .4rem; }
+
+/* ---------- hero ---------- */
+.hero { display: grid; gap: 1rem; }
+.hero .lbl { color: var(--net); }
+.hero h1 { font-family: var(--f-display); font-stretch: 112%; font-weight: 800; font-size: clamp(2.1rem, 5.5vw, 3.3rem); line-height: 1.02; letter-spacing: -.01em; }
+.hero .lede { font-size: 1.12rem; max-width: 42rem; color: var(--ink); }
+.key { display: flex; flex-wrap: wrap; gap: .6rem 1.4rem; align-items: center; padding-top: .9rem; border-top: 1px solid var(--rule); font-size: .92rem; }
+.key span { display: inline-flex; align-items: center; gap: .5rem; }
+.sw { display: inline-block; flex: none; width: 1.05rem; height: .8rem; border-radius: 3px; }
+.sw.paper { background: var(--surface); border: 1px solid var(--rule-strong); }
+.sw.proj { background: var(--proj-soft); border: 1px solid var(--proj-edge); }
+.toc { display: flex; flex-wrap: wrap; gap: .45rem; list-style: none; padding: 0; }
+.toc a { display: inline-flex; align-items: center; min-height: 2.25rem; padding: .25rem .8rem; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); color: var(--ink); font-size: .88rem; text-decoration: none; }
+.toc a:hover { border-color: var(--net); color: var(--net); }
+
+/* ---------- section heads ---------- */
+.sec { display: grid; gap: 1.3rem; }
+.sec-h { display: grid; gap: .45rem; max-width: 44rem; }
+.sec-h h2 { font-family: var(--f-display); font-stretch: 110%; font-weight: 800; font-size: clamp(1.55rem, 3.6vw, 2.05rem); line-height: 1.1; }
+.sec-h p { color: var(--muted); }
+h3 { font-family: var(--f-display); font-stretch: 106%; font-weight: 750; font-size: 1.28rem; line-height: 1.2; }
+h4 { font-family: var(--f-mono); font-size: .74rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+
+/* ---------- one-minute version ---------- */
+.minute { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem; }
+.minute > div { display: grid; align-content: start; gap: .4rem; padding: 1rem 1.1rem; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; min-width: 0; }
+.setup { display: grid; grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr)); gap: .9rem 1.2rem; list-style: none; padding: 0; }
+.setup li { display: grid; gap: .2rem; padding-top: .55rem; border-top: 2px solid var(--ink); min-width: 0; }
+.setup b { font-family: var(--f-display); font-stretch: 108%; font-weight: 800; font-size: 1.45rem; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.setup span { font-size: .88rem; color: var(--muted); line-height: 1.4; }
+
+/* ---------- result cards ---------- */
+.results { display: grid; gap: 1.4rem; }
+.res { display: grid; gap: 1.05rem; padding: 1.35rem 1.35rem 1.4rem; background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; box-shadow: var(--shadow); min-width: 0; }
+.res-h { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .25rem 1rem; align-items: baseline; }
+.res-n { grid-row: span 2; font-family: var(--f-display); font-stretch: 112%; font-weight: 800; font-size: 2.3rem; line-height: .9; color: var(--rule-strong); font-variant-numeric: tabular-nums; }
+.res-h p { color: var(--muted); font-size: .95rem; }
+.rows { display: grid; gap: .9rem; }
+.row { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr); gap: .3rem 1.2rem; }
+.row > h4 { padding-top: .22rem; }
+.row > div { display: grid; gap: .5rem; min-width: 0; }
+.row ul { padding-left: 1.1rem; display: grid; gap: .35rem; }
+@media (max-width: 40rem) { .row { grid-template-columns: minmax(0, 1fr); } }
+.big { display: flex; flex-wrap: wrap; gap: .5rem 1.6rem; }
+.big div { display: grid; gap: .05rem; }
+.big b { font-family: var(--f-display); font-stretch: 108%; font-weight: 800; font-size: 1.6rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.big span { font-size: .82rem; color: var(--muted); }
+.care { padding: .75rem .95rem; border-radius: 10px; background: var(--sos-soft); }
+.care strong { color: var(--sos); }
+
+/* project-files-only highlight */
+.proj { display: grid; gap: .65rem; padding: 1rem 1.1rem 1.1rem; border: 1px solid var(--proj-edge); border-radius: 12px; background: var(--proj-soft); }
+.proj-h { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem .8rem; }
+.proj-h .lbl { color: var(--proj); font-weight: 500; }
+.proj ul { list-style: none; padding: 0; display: grid; gap: .7rem; }
+.proj li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .65rem; align-items: start; }
+.tag { display: inline-flex; align-items: center; padding: .05rem .5rem; border-radius: 6px; font-size: .74rem; font-weight: 600; white-space: nowrap; line-height: 1.5; margin-top: .14rem; }
+.tag.help { background: var(--done-soft); color: var(--done); }
+.tag.weak { background: var(--sos-soft); color: var(--sos); }
+.tag.info { background: var(--surface); color: var(--muted); border: 1px solid var(--rule); }
+.src { font-family: var(--f-mono); font-size: .76rem; color: var(--muted); }
+
+/* ---------- never measured ---------- */
+.gap-box { display: grid; gap: .8rem; padding: 1.3rem 1.35rem; border: 1px solid var(--proj-edge); border-radius: 14px; background: var(--proj-soft); }
+.gap-box .lbl { color: var(--proj); }
+.gap-h { font-family: var(--f-display); font-stretch: 110%; font-weight: 800; font-size: clamp(1.4rem, 3.2vw, 1.8rem); line-height: 1.15; }
+
+/* ---------- slide kit ---------- */
+.order { width: 100%; border-collapse: collapse; font-size: .93rem; }
+.tbl-wrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 12px; background: var(--surface); }
+.tbl-wrap table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+.tbl-wrap th, .tbl-wrap td { text-align: left; vertical-align: top; padding: .6rem .8rem; border-bottom: 1px solid var(--rule); }
+.tbl-wrap tr:last-child td { border-bottom: 0; }
+.tbl-wrap th { font-family: var(--f-mono); font-size: .72rem; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); background: var(--bg); white-space: nowrap; }
+.tbl-wrap td.n, .tbl-wrap th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tbl-wrap caption { caption-side: top; text-align: left; padding: .75rem .8rem .2rem; font-weight: 700; }
+.tbl-note { font-size: .86rem; color: var(--muted); }
+
+.verdict { display: inline-flex; align-items: center; gap: .4rem; padding: .12rem .6rem; border-radius: 999px; font-size: .8rem; font-weight: 700; white-space: nowrap; }
+.verdict::before { content: ""; width: .5rem; height: .5rem; border-radius: 50%; background: currentColor; }
+.v-use { background: var(--done-soft); color: var(--done); }
+.v-fix { background: var(--learn-soft); color: var(--learn); }
+.v-back { background: var(--bg); color: var(--muted); border: 1px solid var(--rule); }
+.v-no { background: var(--sos-soft); color: var(--sos); }
+.v-new { background: var(--net-soft); color: var(--net); }
+
+.figs { display: grid; gap: 1.2rem; }
+.fig { display: grid; grid-template-columns: minmax(0, 23rem) minmax(0, 1fr); gap: 1.1rem 1.4rem; padding: 1.1rem; background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; }
+@media (max-width: 46rem) { .fig { grid-template-columns: minmax(0, 1fr); } }
+.fig .shot { align-self: start; min-width: 0; padding: .5rem; background: var(--mat); border: 1px solid var(--rule); border-radius: 8px; }
+.fig .shot a { display: block; width: 100%; }
+.fig .shot img { width: 100%; }
+.fig-t { display: grid; gap: .6rem; align-content: start; min-width: 0; }
+.fig-t .top { display: flex; flex-wrap: wrap; gap: .4rem .7rem; align-items: center; }
+.fig-t h3 { font-size: 1.15rem; }
+.fig-t dl { display: grid; gap: .55rem; }
+.fig-t dt { font-family: var(--f-mono); font-size: .7rem; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.fig-t dd { margin: .1rem 0 0; }
+.fig-t dd ul { padding-left: 1.1rem; display: grid; gap: .3rem; }
+.file { font-family: var(--f-mono); font-size: .76rem; color: var(--muted); overflow-wrap: anywhere; }
+
+.say { padding: .6rem .85rem; border-radius: 8px; background: var(--done-soft); }
+.say::before { content: "Say: "; font-weight: 700; color: var(--done); }
+
+.keepoff { display: grid; gap: .7rem; padding: 1.1rem 1.2rem; border-radius: 12px; background: var(--sos-soft); }
+.keepoff .lbl { color: var(--sos); }
+.keepoff ul { padding-left: 1.1rem; display: grid; gap: .35rem; }
+
+/* ---------- charts ---------- */
+.charts { display: grid; gap: 1.2rem; }
+.chart { display: grid; gap: .9rem; padding: 1.15rem 1.2rem 1.2rem; background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; min-width: 0; }
+.chart.is-proj { border-color: var(--proj-edge); }
+.chart-h { display: grid; gap: .3rem; }
+.chart-h .top { display: flex; flex-wrap: wrap; gap: .4rem .7rem; align-items: center; }
+.chart-h p { color: var(--muted); font-size: .92rem; }
+.legend { display: flex; flex-wrap: wrap; gap: .3rem 1.1rem; font-size: .84rem; color: var(--muted); list-style: none; padding: 0; }
+.legend li { display: inline-flex; align-items: center; gap: .45rem; }
+.legend i { display: inline-block; width: .8rem; height: .8rem; border-radius: 3px; }
+.c-dyn { background: var(--s-dyn); }
+.c-ppo { background: var(--s-ppo); }
+.c-base { background: var(--s-base); }
+.panels { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 1rem 2rem; }
+.panel { display: grid; gap: .55rem; align-content: start; min-width: 0; }
+.panel-t { font-weight: 700; font-size: .92rem; }
+.bars { display: grid; gap: .5rem; }
+.bar-row { display: grid; grid-template-columns: 8.6rem minmax(0, 1fr); gap: .65rem; align-items: center; }
+.bar-row > span { font-size: .84rem; line-height: 1.25; color: var(--ink); }
+.track { position: relative; height: 1.5rem; background: repeating-linear-gradient(90deg, var(--rule) 0 1px, transparent 1px var(--tick, 25%)); background-size: 100% 100%; border-left: 1px solid var(--rule-strong); }
+.bar { position: absolute; left: 0; top: .32rem; height: .86rem; border-radius: 0 4px 4px 0; cursor: default; }
+.bar:focus-visible { outline-offset: 3px; }
+.bar-v { position: absolute; top: 50%; transform: translateY(-50%); padding-left: .4rem; font-size: .82rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink); white-space: nowrap; }
+.axis { display: grid; grid-template-columns: 8.6rem minmax(0, 1fr); gap: .65rem; }
+.axis div { position: relative; height: 1.1rem; font-family: var(--f-mono); font-size: .7rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.axis div span { position: absolute; transform: translateX(-50%); }
+.axis div span:first-child { transform: none; }
+.axis-t { font-size: .78rem; color: var(--muted); }
+@media (max-width: 30rem) { .bar-row, .axis { grid-template-columns: 6.6rem minmax(0, 1fr); } }
+details.data summary { cursor: pointer; font-size: .86rem; color: var(--net); width: max-content; max-width: 100%; }
+details.data[open] summary { margin-bottom: .5rem; }
+.tip { position: fixed; z-index: 50; pointer-events: none; max-width: 16rem; padding: .45rem .65rem; border-radius: 8px; background: var(--ink); color: var(--surface); font-size: .82rem; line-height: 1.35; box-shadow: var(--shadow); }
+
+/* ---------- glossary ---------- */
+.gloss { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: .9rem 1.4rem; }
+.gloss div { display: grid; gap: .2rem; padding-top: .6rem; border-top: 1px solid var(--rule); min-width: 0; }
+.gloss dt { font-weight: 700; }
+.gloss dd { margin: 0; font-size: .93rem; color: var(--muted); }
+
+.foot { font-size: .86rem; color: var(--muted); display: grid; gap: .5rem; max-width: 46rem; padding-top: 1.2rem; border-top: 1px solid var(--rule); }
+</style>
+</head>
+<body>
+<main class="page">
+
+<header class="hero" id="top">
+  <p class="lbl">ABOT · IEEE R10-HTC 2026 · results guide</p>
+  <h1>ABOT results, in plain English</h1>
+  <p class="lede">What the experiments found, what each number means, and which graphs and tables to put on your slides. Technical words are used only where you will need them on stage, and each one is explained in <a href="#words">Words to know</a>.</p>
+  <div class="key">
+    <span><i class="sw paper" aria-hidden="true"></i>White blocks: based on the camera-ready paper</span>
+    <span><i class="sw proj" aria-hidden="true"></i>Amber blocks: from the project files only, <strong>not in the paper</strong></span>
+  </div>
+  <nav aria-label="Contents">
+    <ul class="toc">
+      <li><a href="#minute">The project in one minute</a></li>
+      <li><a href="#results">The six results</a></li>
+      <li><a href="#never">What was never measured</a></li>
+      <li><a href="#limits">Limits the paper admits</a></li>
+      <li><a href="#kit">Graphs and tables to use</a></li>
+      <li><a href="#words">Words to know</a></li>
+    </ul>
+  </nav>
+</header>
+
+<section class="sec" id="minute" aria-labelledby="minute-h">
+  <div class="sec-h">
+    <h2 id="minute-h">The project in one minute</h2>
+  </div>
+  <div class="minute">
+    <div>
+      <h4>The problem</h4>
+      <p>After a big disaster, phone towers and the internet often go down just when survivors and rescuers most need to talk.</p>
+    </div>
+    <div>
+      <h4>The idea</h4>
+      <p>Cheap <strong>LoRa</strong> radios that pass short messages from one to the next, like a bucket brigade. There is no central tower (no <strong>gateway</strong>): every radio sends its own messages and relays other people's.</p>
+    </div>
+    <div>
+      <h4>The twist</h4>
+      <p>Each radio keeps a running <strong>link-quality score</strong> for its neighbours, and the route-finder uses those live scores all the time, not only after something breaks.</p>
+    </div>
+    <div>
+      <h4>The AI part</h4>
+      <p>The authors also trained an AI route-picker (<strong>PPO</strong>, a trial-and-error learning method). The paper calls this part <em>exploratory</em>.</p>
+    </div>
+    <div>
+      <h4>How it was tested</h4>
+      <p>Entirely in a computer simulation. No real radios were used. The authors built a fast simulator so the AI could be trained.</p>
+    </div>
+    <div>
+      <h4>The task in each test</h4>
+      <p>Start at a random radio and hop, radio by radio, to one of two <strong>safe zones</strong> (rescue points) in the corners of the grid. Count the hops and check that it arrives.</p>
+    </div>
+  </div>
+  <ul class="setup" aria-label="Test setup">
+    <li><b class="num">100</b><span>radios on a 10×10 grid (main tests); 225 on 15×15</span></li>
+    <li><b class="num">400 m</b><span>between neighbouring radios on the grid</span></li>
+    <li><b class="num">1.5 km</b><span>radio range, so each radio has about 31 neighbours (up to 44)</span></li>
+    <li><b class="num">1–3</b><span>hops for a typical trip by the fastest route-finders</span></li>
+    <li><b class="num">5</b><span>damage levels, from intact to extreme</span></li>
+    <li><b class="num">100</b><span>trips per route-finder per grid in the main comparison</span></li>
+  </ul>
+  <p class="tbl-note">The "1–3 hops" figure comes from the project's result files (<code>commaware_main_10x10.csv</code>); the paper gives means and medians instead. Everything else in this block is in the paper.</p>
+</section>
+
+<section class="sec" id="results" aria-labelledby="results-h">
+  <div class="sec-h">
+    <h2 id="results-h">The six results</h2>
+    <p>Ordered from the strongest to the weakest claim. Each card says what was tested, what happened, what it means, what not to say, and then (in amber) what the project files add.</p>
+  </div>
+
+  <div class="results">
+
+  <!-- ===== R1 ===== -->
+  <article class="res" id="r1">
+    <div class="res-h">
+      <span class="res-n" aria-hidden="true">1</span>
+      <h3>Using live link scores changes which routes get picked</h3>
+      <p>The paper's main supported result. Paper sections V-C and VII.</p>
+    </div>
+    <div class="rows">
+      <div class="row"><h4>What was tested</h4><div>
+        <p>The same route-finder (<strong>Dijkstra</strong>, the classic shortest-route method a sat-nav uses) was run in two versions on the same 100 test trips:</p>
+        <ul>
+          <li><strong>Static:</strong> counts hops only and takes the shortest route.</li>
+          <li><strong>Dynamic:</strong> also weighs each link by its live quality score, and re-plans if a radio on the next three hops dies or its score drops below 0.5.</li>
+        </ul>
+      </div></div>
+      <div class="row"><h4>What happened</h4><div>
+        <div class="big">
+          <div><b>0.267 vs 0.145</b><span>average link score, dynamic vs static</span></div>
+          <div><b>≈1.8×</b><span>higher with live scores</span></div>
+          <div><b>1.50×</b><span>fairest test (43 trips), p = 0.0057</span></div>
+        </div>
+        <ul>
+          <li>Across damage levels, the gap is about 1.8–1.9× from intact to heavy and about 1.5× at severe and extreme.</li>
+          <li><strong>Fairest test:</strong> in 43 of the 100 trips, both versions planned the same first route, so the only difference left is re-planning. There the scores were 0.3098 vs 0.2067, i.e. 1.50×. A p-value of 0.0057 means a gap this big would almost never appear by chance.</li>
+          <li>When trips of the same length are compared, the gap widens to 1.9–2.6×.</li>
+          <li>The A* pair (another classic route-finder, tested the same way) shows nothing (1.03×), because its re-planning rule fired in only 3 of 100 trips. The paper says this pair can't be used as evidence.</li>
+        </ul>
+      </div></div>
+      <div class="row"><h4>What it means</h4><div>
+        <p>A route-finder that listens to live link quality ends up on noticeably better-quality links than one that only counts hops. This is the one result the paper stands on.</p>
+      </div></div>
+      <div class="row"><h4>Be careful</h4><div>
+        <p class="care"><strong>Don't say "it delivers 1.8× more messages."</strong> The number is a link-quality score, not a count of messages that arrived. Say "it chooses routes over links with about 1.8 times higher quality scores." The dynamic version also takes longer routes: 3.23 hops on average against 2.17.</p>
+      </div></div>
+    </div>
+    <div class="proj">
+      <div class="proj-h"><span class="lbl">Project files only · not in the paper</span></div>
+      <ul>
+        <li><span class="tag help">Helps</span><div>All five route-finders on the same score: Dijkstra dynamic <strong>0.267</strong>, A* dynamic 0.166, A* static 0.161, Dijkstra static 0.145, PPO 0.141. Only the one that re-plans on the score stands out; the AI is the lowest. <span class="src">results_commaware/FINDINGS.md §5</span></div></li>
+        <li><span class="tag help">Helps</span><div>Longer trips score lower for every route-finder (Dijkstra static: 0.253, 0.139 and 0.090 for 1, 2 and 3 hops). So the dynamic version wins even though its longer routes work against it. Matched by length: 0.362 vs at most 0.161 for 2-hop trips; 0.233 vs at most 0.120 for 3-hop trips. <span class="src">FINDINGS.md §5; commaware_main_10x10.csv</span></div></li>
+        <li><span class="tag weak">Weakness</span><div><strong>The test is partly circular.</strong> The dynamic version picks routes using this score, and is then graded on the same score. It's a bit like a student who chooses which questions to answer and is marked only on those. <span class="src">baselines.py:339-342; runner.py:103-104</span></div></li>
+        <li><span class="tag weak">Weakness</span><div><strong>The score is a radio's average over all its ~30 links, not the quality of the link actually used.</strong> A link that has never been tried counts as perfect (1.0). <span class="src">timestep.py:720-733</span></div></li>
+        <li><span class="tag weak">Weakness</span><div>The average hides a lopsided spread. For Dijkstra static the typical (median) trip scores only 0.043, and 26 of 100 trips score exactly 0. <span class="src">commaware_main_10x10.csv</span></div></li>
+        <li><span class="tag info">Know it</span><div>The dynamic version never found a shorter route than the static one, and took a longer one in 63 of 100 trips. In 10 of the 23 trips where the safe zone was one hop away, it took 2 or more hops. Don't claim the extra hops are "worth it". <span class="src">commaware_main_10x10.csv; baselines.csv</span></div></li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- ===== R2 ===== -->
+  <article class="res" id="r2">
+    <div class="res-h">
+      <span class="res-n" aria-hidden="true">2</span>
+      <h3>The AI route-picker is in the same range as the classic methods, not better than the fastest</h3>
+      <p>Paper section V-A and Table II.</p>
+    </div>
+    <div class="rows">
+      <div class="row"><h4>What was tested</h4><div>
+        <p>PPO against four classic route-finders (Dijkstra and A*, each static and dynamic), 100 trips each, on the 10×10 grid and the larger 15×15 grid, at the default "heavy" damage level.</p>
+      </div></div>
+      <div class="row"><h4>What happened</h4><div>
+        <ul>
+          <li><strong>Everyone arrives.</strong> All five reach a safe zone in essentially every trip, so they are compared on how many hops they take.</li>
+          <li><strong>10×10, average hops:</strong> three fastest planners 2.17, PPO 2.48, Dijkstra dynamic 3.23.</li>
+          <li><strong>15×15, average hops:</strong> three fastest planners 3.23–3.25, PPO 3.56, Dijkstra dynamic 4.40.</li>
+          <li>Statistics (Table II): PPO beats Dijkstra dynamic at both sizes. It is slightly worse than the three fastest at 10×10 (adjusted p = 0.047, just under the usual 0.05 cut-off), and shows no measurable difference from them at 15×15 (p = 0.255).</li>
+        </ul>
+      </div></div>
+      <div class="row"><h4>What it means</h4><div>
+        <p>The AI learned a sensible way to route, but simple shortest-path methods are as good or better. It ranks 4th of 5 at both grid sizes. The paper is upfront about this and calls the AI part exploratory.</p>
+      </div></div>
+      <div class="row"><h4>Be careful</h4><div>
+        <p class="care"><strong>Don't say "PPO matches the classical planners."</strong> At 10×10 it is measurably behind the fastest ones. Say "in the same range as the classic methods, slightly behind the fastest at 10×10, no significant difference at 15×15." The paper calls PPO's result a "lower bound" (handicapped, so the true value could be better). See the amber block before leaning on that.</p>
+      </div></div>
+    </div>
+    <div class="proj">
+      <div class="proj-h"><span class="lbl">Project files only · not in the paper</span></div>
+      <ul>
+        <li><span class="tag weak">Weakness</span><div><strong>The "lower bound" argument is weaker than it sounds.</strong> The paper says PPO is handicapped twice: it sees only local information, and it can only choose among 8 neighbours. But (1) PPO is given a hop count to the nearest safe zone that is worked out from the whole network map, and (2) a "policy" that always picks the first of its 8 choices matches PPO's medians (3 hops at 10×10, 4 at 15×15), though its averages are a little worse (2.71 and 4.07 against 2.48 and 3.56). That works because the 8 choices are the lowest-numbered neighbours and both safe zones sit in the lowest-numbered row. So the 8-choice limit doesn't stop PPO finding a good next hop. <span class="src">state.py:164-166; redteam/seed_starts.py</span></div></li>
+        <li><span class="tag info">Know it</span><div>The planner that uses choices beyond the first 8 most often (Dijkstra dynamic, 23.6% of moves) is the one PPO beats. The fast A* dynamic goes beyond 8 in under 1% of moves. <span class="src">results_rev2/action_space_audit.json</span></div></li>
+        <li><span class="tag info">Know it</span><div>Every PPO result in the comparison and the damage sweep comes from one trained model (training run "seed 0"). That is the run whose value-estimator (the "critic") converged worst: −0.67 in the paper's limitations list. <span class="src">results_rev1/convergence_summary.json</span></div></li>
+        <li><span class="tag info">Know it</span><div>The task is easy to learn. PPO's average reward was already 81–89 after its first 1,400 training steps and ended near 101 after 200,000. <span class="src">results_rev1/tb/seed_*/progress.csv</span></div></li>
+        <li><span class="tag help">Helps</span><div>At 15×15 the two static planners each had one bad trip: 8–9 hops and a reward of about 72–73, most likely from repeatedly trying a radio that had died. A* dynamic took 5 hops on the same trip, and no re-planning planner or AI trip ever scored below 92.3. It is one trip, so it's a worst-case example, not a statistical result. <span class="src">results_15x15/FINDINGS.md §5</span></div></li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- ===== R3 ===== -->
+  <article class="res" id="r3">
+    <div class="res-h">
+      <span class="res-n" aria-hidden="true">3</span>
+      <h3>Making the damage worse barely changes the outcome</h3>
+      <p>Paper section V-B, the severity sweep.</p>
+    </div>
+    <div class="rows">
+      <div class="row"><h4>What was tested</h4><div>
+        <p>Five damage levels (intact, moderate, heavy, severe, extreme). More damage means radio signals fade faster with distance and vary more from place to place, as rubble would cause. 250 trips per route-finder per level.</p>
+      </div></div>
+      <div class="row"><h4>What happened</h4><div>
+        <ul>
+          <li>Success stays at about 100% at every level.</li>
+          <li>Only Dijkstra dynamic's link score moves: about 0.28 from intact to heavy, then 0.218 at severe and 0.216 at extreme. That is a single 23% drop at one step, not a gradual slide. Everyone else moves by less than 0.02.</li>
+          <li>PPO succeeds in 99.6% of trips at every level. Four of its five groups of trials average 101–102 reward. The fourth group averages about 17 (intact to heavy) and 23 (severe and extreme).</li>
+          <li><strong>Why that group is low:</strong> a <strong>livelock</strong>, a stuck loop. The AI keeps choosing a neighbour that has died, gets a penalty, sees almost the same situation, and chooses it again.</li>
+        </ul>
+      </div></div>
+      <div class="row"><h4>What it means</h4><div>
+        <p>In this setup, damage weakens the long links but doesn't stop trips. The AI's weak spot comes from its fixed list of 8 choices, not from damage: the stuck loop happens at every damage level.</p>
+      </div></div>
+      <div class="row"><h4>Be careful</h4><div>
+        <p class="care"><strong>The abstract mentions "limitations of RL-based routing under extreme network collapse".</strong> The results don't show a weakness specific to severe damage. Say "the AI's weak point is a stuck loop caused by its fixed 8-choice list, and it happens at every damage level."</p>
+      </div></div>
+    </div>
+    <div class="proj">
+      <div class="proj-h"><span class="lbl">Project files only · not in the paper</span></div>
+      <ul>
+        <li><span class="tag weak">Weakness</span><div><strong>Success is 100% by design.</strong> A hop succeeds whenever the next radio is alive. Link quality never makes a hop fail, so damage can't stop a trip. <span class="src">env.py:311-313</span></div></li>
+        <li><span class="tag help">Helps</span><div><strong>Why the drop happens exactly at "severe".</strong> From the paper's own Fig. 2, the distance where a link works half the time is 2.0 km at heavy (beyond the 1.5 km neighbour range) but 1.03 km at severe (inside it). So at severe, the longest links in range start failing. This explains the step in plain terms.</div></li>
+        <li><span class="tag info">Know it</span><div>The simulator used for these runs has no random fading. At intact through heavy, every link within range works at least 99.96% of the time; at severe, links longer than about 1.1 km fail; at extreme, longer than about 0.8 km. <span class="src">timestep.py:157-169; context.md §15</span></div></li>
+        <li><span class="tag info">Know it</span><div>The static planners take exactly the same hops at all five levels in 250 of 250 trips. Radios rarely die during a trip: the chance that one on the route dies is about 1–3%, because trips last only tens of simulated seconds. <span class="src">commaware_severity_episodes.csv</span></div></li>
+        <li><span class="tag info">Know it</span><div>The low PPO group is one stuck trip, not a whole bad group. In that group, 49 of 50 trips reach the safe zone as usual; the one that gets stuck collects penalties until the time limit and drags the group's average down. That's why the median stays at 101.5. <span class="src">results_rev2/seed3_outlier.json</span></div></li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- ===== R4 ===== -->
+  <article class="res" id="r4">
+    <div class="res-h">
+      <span class="res-n" aria-hidden="true">4</span>
+      <h3>The new simulator is fast enough to train the AI</h3>
+      <p>Paper section IV.</p>
+    </div>
+    <div class="rows">
+      <div class="row"><h4>What was tested</h4><div>
+        <p>The original simulator (<strong>SimPy</strong>) handles every radio transmission as a separate event, which is accurate but slow. The new one (the <strong>timestep backend</strong>) processes all radios together, one time step at a time. The authors timed both and checked whether they give the same answers.</p>
+      </div></div>
+      <div class="row"><h4>What happened</h4><div>
+        <div class="big">
+          <div><b>up to 7.3×</b><span>faster with collisions modelled (used for every result)</span></div>
+          <div><b>up to 303×</b><span>faster without collisions</span></div>
+        </div>
+        <ul>
+          <li>Changing how often radios fail doesn't change the speed-up.</li>
+          <li>Agreement check (a KS test over 20 runs): the two simulators agree on how many radios stay alive (p = 0.98), but disagree on message-delivery numbers (p &lt; 0.001).</li>
+        </ul>
+      </div></div>
+      <div class="row"><h4>What it means</h4><div>
+        <p>The fast simulator makes AI training practical. It matches the original on which radios are alive, which is what the AI learns from. Absolute delivery numbers from either simulator shouldn't be trusted.</p>
+      </div></div>
+      <div class="row"><h4>Be careful</h4><div>
+        <p class="care"><strong>The speed-up is against the authors' own reference simulator,</strong> not against standard network simulators such as ns-3 or OMNeT++. Say "up to 7.3 times faster than our reference simulator."</p>
+      </div></div>
+    </div>
+    <div class="proj">
+      <div class="proj-h"><span class="lbl">Project files only · not in the paper</span></div>
+      <ul>
+        <li><span class="tag weak">Weakness</span><div><strong>7.3× is the smallest grid (25 radios).</strong> The speed-up shrinks as the grid grows: 4.7× at 10×10, the size used for the results; 4.0× at 15×15; 3.5–4.5× from 20×20 to 30×30. <span class="src">results_rev1/scalability.csv</span></div></li>
+        <li><span class="tag info">Know it</span><div><strong>Why 303× is so large:</strong> the reference simulator gets much slower when collisions are switched off (about 14.3 s per run at 15×15, against about 0.5 s with collisions on), most likely because far more messages survive and have to be processed. The 303× was measured at 15×15. <span class="src">scalability_nocontention.csv</span></div></li>
+        <li><span class="tag info">Know it</span><div>With collisions on, the reference simulator ran all the way to 30×30 (one of the 15 runs at that size timed out). Only the no-collision runs timed out from 20×20 up. <span class="src">scalability.csv; scalability_nocontention.csv</span></div></li>
+        <li><span class="tag weak">Weakness</span><div>The fast simulator sends every radio's "I'm here" beacon at the same instant, so they collide: in a check, none of 3,068 beacon receptions got through. It also has no random fading. Both make it simpler than the real world. <span class="src">timestep.py:452-463, 157-169; redteam/beacon_round.py</span></div></li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- ===== R5 ===== -->
+  <article class="res" id="r5">
+    <div class="res-h">
+      <span class="res-n" aria-hidden="true">5</span>
+      <h3>Sharing learned values between radios ("gossip") makes no difference</h3>
+      <p>Paper section IV-A.</p>
+    </div>
+    <div class="rows">
+      <div class="row"><h4>What was tested</h4><div>
+        <p>Radios can broadcast the AI's estimate of "how good is this spot" to their neighbours. The AI was trained and tested with this sharing switched on and off: 3 training runs and 300 trips per arm.</p>
+      </div></div>
+      <div class="row"><h4>What happened</h4><div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Measure</th><th class="n">Gossip on</th><th class="n">Gossip off</th><th class="n">p</th></tr></thead>
+          <tbody>
+            <tr><td>Reached safe zone</td><td class="n">100%</td><td class="n">100%</td><td class="n">1.0</td></tr>
+            <tr><td>Average hops</td><td class="n">2.487</td><td class="n">2.497</td><td class="n">0.842</td></tr>
+            <tr><td>Average reward</td><td class="n">101.42</td><td class="n">101.27</td><td class="n">0.826</td></tr>
+          </tbody>
+        </table></div>
+      </div></div>
+      <div class="row"><h4>What it means</h4><div>
+        <p>The system works fine without gossip. This doesn't show gossip helps. The paper itself says the step where a radio would use the values it receives isn't connected yet.</p>
+      </div></div>
+      <div class="row"><h4>Be careful</h4><div>
+        <p class="care"><strong>Don't say gossip helps, or that it was shown to be cheap.</strong> Say "Gossip made no difference; its merge step isn't connected yet."</p>
+      </div></div>
+    </div>
+    <div class="proj">
+      <div class="proj-h"><span class="lbl">Project files only · not in the paper</span></div>
+      <ul>
+        <li><span class="tag weak">Weakness</span><div>During the 300 test trips with gossip "on", no gossip message was actually sent, because each trip starts with an empty value table. A few go out during training, but nothing ever reads them. So avoid repeating the paper's line that the "on" arm "pays gossip's airtime". <span class="src">gossip.py:200-222; env.py:280-288</span></div></li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- ===== R6 ===== -->
+  <article class="res" id="r6">
+    <div class="res-h">
+      <span class="res-n" aria-hidden="true">6</span>
+      <h3>The radio model behaves sensibly</h3>
+      <p>Paper section V-D and Fig. 2.</p>
+    </div>
+    <div class="rows">
+      <div class="row"><h4>What was tested</h4><div>
+        <p>How often a single radio link gets a message through, plotted against distance, for each damage level.</p>
+      </div></div>
+      <div class="row"><h4>What happened</h4><div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Damage level</th><th class="n">Link works half the time at</th><th class="n">Success at 1.5 km</th></tr></thead>
+          <tbody>
+            <tr><td>Intact</td><td class="n">45.5 km</td><td class="n">100%</td></tr>
+            <tr><td>Moderate</td><td class="n">15.5 km</td><td class="n">99.9%</td></tr>
+            <tr><td>Heavy (default)</td><td class="n">2.0 km</td><td class="n">66.4%</td></tr>
+            <tr><td>Severe</td><td class="n">1.03 km</td><td class="n">28.6%</td></tr>
+            <tr><td>Extreme</td><td class="n">637 m</td><td class="n">10.9%</td></tr>
+          </tbody>
+        </table></div>
+        <p>At the 400 m grid spacing, links work more than 73% of the time at every level.</p>
+      </div></div>
+      <div class="row"><h4>What it means</h4><div>
+        <p>More damage means shorter reach, and longer distance means more failures, as the textbook model predicts. This checks the model is internally consistent. It doesn't prove it matches real radios.</p>
+      </div></div>
+      <div class="row"><h4>Be careful</h4><div>
+        <p class="care"><strong>Don't call this "validated" against reality.</strong> The paper's own words are "internal consistency of the channel model only".</p>
+      </div></div>
+    </div>
+    <div class="proj">
+      <div class="proj-h"><span class="lbl">Project files only · not in the paper</span></div>
+      <ul>
+        <li><span class="tag info">Know it</span><div>The curve is calculated straight from the radio formulas, not from running the mesh simulator. The figure caption's "timestep backend" is misleading; drop it from your slide caption. <span class="src">scripts/make_fig4_pdr_distance.py:15</span></div></li>
+      </ul>
+    </div>
+  </article>
+
+  </div>
+</section>
+
+<section class="sec" id="never" aria-labelledby="never-h">
+  <div class="gap-box">
+    <p class="lbl">Project files only · the biggest thing to understand</p>
+    <h2 id="never-h" class="gap-h">What was never measured: whether an SOS reaches a rescuer</h2>
+    <div class="prose">
+      <p>The abstract says the results "demonstrate improved packet delivery performance", and the conclusion speaks of a "measured delivery gain". No experiment counts whether a distress message actually arrives at a rescue point, or how long it takes.</p>
+      <ul>
+        <li><strong>The routes don't carry messages.</strong> A "trip" moves the agent's position from radio to radio. Nothing is transmitted along the route that each method picks.</li>
+        <li><strong>SOS messages are simulated, but separately.</strong> They are broadcast to everyone, with no destination, whichever route-finder is in charge. Nothing checks whether one reached a safe zone.</li>
+        <li><strong>The result files hold only four things per trip:</strong> arrived or not, hops, reward, and the link score.</li>
+      </ul>
+      <p>So the honest claim is "live link scores change which routes get chosen", not "more messages get through". The natural next step, before hardware, is to send each SOS along each method's route over the radio model, let hops fail, and count arrivals and delay.</p>
+      <p class="src">context.md §11, §16; env.py:312-313, 390-409; timestep.py:342</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="limits" aria-labelledby="limits-h">
+  <div class="sec-h">
+    <h2 id="limits-h">Limits the paper admits</h2>
+    <p>From paper section VI. These are safe to say on stage because the paper already says them.</p>
+  </div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Limit</th><th>In plain words</th></tr></thead>
+    <tbody>
+      <tr><td>Simulation only</td><td>No real radios were used. Results cover up to 900 simulated radios.</td></tr>
+      <tr><td>Airtime rule</td><td>Beacons every 30 s at SF12 take about 4.4% of airtime, above the 1% limit in the European rule ETSI EN 300 220-2. A compliant schedule would change every beacon-based number.</td></tr>
+      <tr><td>8-choice limit</td><td>The AI picks from 8 neighbours, but radios have about 31. This fixed list causes the stuck loop.</td></tr>
+      <tr><td>AI training not settled</td><td>The AI's value-estimator didn't converge: scores of −0.67, 0.18 and 0.71 across the three training runs (1.0 would be perfect).</td></tr>
+      <tr><td>Adoption</td><td>People have to carry and use the devices for a mesh to exist.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="proj">
+    <div class="proj-h"><span class="lbl">Project files only · not in the paper</span></div>
+    <ul>
+      <li><span class="tag info">Know it</span><div>The airtime limit isn't enforced anywhere in the simulation. <span class="src">phy.py:247</span></div></li>
+      <li><span class="tag info">Check first</span><div>The red-team review says India's 865–867 MHz band has no duty-cycle limit, which would make the ETSI point a European one. That is an outside fact it didn't verify; check it before saying it. <span class="src">ABOT-red-team.md</span></div></li>
+    </ul>
+  </div>
+</section>
+
+<section class="sec" id="kit" aria-labelledby="kit-h">
+  <div class="sec-h">
+    <h2 id="kit-h">Graphs and tables to use</h2>
+    <p>Every figure below is copied into <code>assets/figures/</code> in this folder, as a 300 dpi PNG and a vector PDF (use the PDF in PowerPoint when you can; it stays sharp). Click a thumbnail to open it full size.</p>
+  </div>
+
+  <div class="tbl-wrap"><table>
+    <caption>Suggested running order for the results part of the talk</caption>
+    <thead><tr><th>Slide</th><th>Show</th><th>Verdict</th></tr></thead>
+    <tbody>
+      <tr><td>How ABOT is built</td><td>Fig. 1, the four-layer diagram</td><td><span class="verdict v-use">Use</span></td></tr>
+      <tr><td>Test setup</td><td>"Setup at a glance" table (below)</td><td><span class="verdict v-new">Make new</span></td></tr>
+      <tr><td>Radio model</td><td>Fig. 2 plus the five-row damage table</td><td><span class="verdict v-use">Use</span></td></tr>
+      <tr><td>Main result</td><td>Chart A: static vs dynamic link score</td><td><span class="verdict v-new">Make new</span></td></tr>
+      <tr><td>AI vs classic methods</td><td>Chart B (average hops) plus simplified Table II</td><td><span class="verdict v-new">Make new</span></td></tr>
+      <tr><td>Damage sweep</td><td><code>damage_severity</code> figure, relabelled</td><td><span class="verdict v-fix">Fix first</span></td></tr>
+      <tr><td>Fast simulator</td><td>One line: "up to 7.3×"; <code>fig_scalability</code> in backup</td><td><span class="verdict v-back">Backup</span></td></tr>
+      <tr><td>Gossip</td><td>The three-row gossip table</td><td><span class="verdict v-use">Use</span></td></tr>
+      <tr><td>Limits</td><td>The limits table above, as bullets</td><td><span class="verdict v-use">Use</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Existing figures</h3>
+  <div class="figs">
+
+    <article class="fig">
+      <div class="shot"><a href="assets/figures/fig1_architecture_v2.png"><img src="assets/figures/fig1_architecture_v2.png" alt="Four stacked layers: Physical LoRa, MAC and forwarding, link-state monitoring, routing and evacuation, inside a dashed simulation box" loading="lazy" width="3120" height="1634"></a></div>
+      <div class="fig-t">
+        <div class="top"><span class="verdict v-use">Use</span><span class="lbl">Paper Fig. 1</span></div>
+        <h3>The four-layer architecture</h3>
+        <dl>
+          <div><dt>What it shows</dt><dd>How a radio is organised, bottom to top: the radio itself, how messages are sent and passed on, how link quality is tracked, and how routes are chosen.</dd></div>
+          <div><dt>Why use it</dt><dd>It is clean, already in the paper, and gives the audience a map for everything after it.</dd></div>
+          <div><dt>Before you use it</dt><dd><ul><li>Say "four layers". The paper's text says three, but the figure shows four.</li><li>The dashed outer box is the simulation harness used for training. It is not part of a real radio.</li></ul></dd></div>
+        </dl>
+        <p class="file">assets/figures/fig1_architecture_v2.png / .pdf</p>
+      </div>
+    </article>
+
+    <article class="fig">
+      <div class="shot"><a href="assets/figures/fig4_pdr_vs_distance.png"><img src="assets/figures/fig4_pdr_vs_distance.png" alt="Five S-shaped curves of delivery ratio against distance on a log scale, one per damage level, shifting left as damage grows" loading="lazy" width="2068" height="1307"></a></div>
+      <div class="fig-t">
+        <div class="top"><span class="verdict v-use">Use</span><span class="lbl">Paper Fig. 2</span></div>
+        <h3>Link success vs distance</h3>
+        <dl>
+          <div><dt>What it shows</dt><dd>One curve per damage level: how often a link gets a message through as distance grows. Worse damage shifts the curve left (shorter reach).</dd></div>
+          <div><dt>Why use it</dt><dd>It explains the damage levels visually, and it explains why the damage-sweep drop happens at "severe" (the half-way point falls inside the 1.5 km range).</dd></div>
+          <div><dt>Before you use it</dt><dd><ul><li>Tell the audience the distance axis is a log scale: each gridline step is ten times further.</li><li>Point at the shaded band (400 m to 1.5 km): that's where the mesh actually operates.</li><li>Caption it "Link success vs distance (channel model)". Drop "timestep backend".</li></ul></dd></div>
+        </dl>
+        <p class="say">"This shows the radio model behaves sensibly. It isn't proof it matches real radios."</p>
+        <p class="file">assets/figures/fig4_pdr_vs_distance.png / .pdf</p>
+      </div>
+    </article>
+
+    <article class="fig">
+      <div class="shot"><a href="assets/figures/damage_severity.png"><img src="assets/figures/damage_severity.png" alt="Two panels across five damage levels: link score, where only Dijkstra dynamic is high and drops at severe; and steps, which stay flat for everyone" loading="lazy" width="3262" height="1284"></a></div>
+      <div class="fig-t">
+        <div class="top"><span class="verdict v-fix">Fix first</span><span class="lbl">Not in the paper</span></div>
+        <h3>Damage sweep</h3>
+        <dl>
+          <div><dt>What it shows</dt><dd>Left: link score at each damage level; only Dijkstra dynamic stands out, and it drops once at "severe". Right: hops stay flat for everyone.</dd></div>
+          <div><dt>Why use it</dt><dd>It shows results 1 and 3 in one picture, with every planner on the same simulator. Its numbers match the paper's text.</dd></div>
+          <div><dt>Before you use it</dt><dd><ul><li>The left axis says "Packet delivery ratio" and the title says "Packet delivery ratio vs. severity". Relabel both "link-quality score", or say so out loud.</li><li>"n=2.7" under each level is the path-loss exponent, not a sample size. Replace with plain level names, or explain once.</li></ul></dd></div>
+        </dl>
+        <p class="file">assets/figures/damage_severity.png / .pdf</p>
+      </div>
+    </article>
+
+    <article class="fig">
+      <div class="shot"><a href="assets/figures/fig_baselines.png"><img src="assets/figures/fig_baselines.png" alt="Four panels: median steps to safe zone as bars, and median reward with ranges, for five agents at two grid sizes" loading="lazy" width="3563" height="2452"></a></div>
+      <div class="fig-t">
+        <div class="top"><span class="verdict v-back">Backup</span><span class="lbl">Not in the paper</span></div>
+        <h3>Baseline comparison</h3>
+        <dl>
+          <div><dt>What it shows</dt><dd>Median hops (left) and median reward (right) for all five route-finders at both grid sizes.</dd></div>
+          <div><dt>Why not as a main slide</dt><dd><ul><li>Hop counts are whole numbers, so the medians tie (2 or 3), and PPO looks identical to Dijkstra dynamic. The averages (2.48 vs 3.23) show the real gap.</li><li>The reward panels repeat the hop story in another unit and add a confusing scale.</li></ul></dd></div>
+          <div><dt>Instead</dt><dd>Use Chart B below. If you do use this one, crop to the two left panels.</dd></div>
+        </dl>
+        <p class="file">assets/figures/fig_baselines.png / .pdf</p>
+      </div>
+    </article>
+
+    <article class="fig">
+      <div class="shot"><a href="assets/figures/fig_scalability.png"><img src="assets/figures/fig_scalability.png" alt="Speed-up against grid size on a log scale: contention on stays between about 3.5 and 7, contention off climbs to about 300 at 15 by 15, with crosses for timeouts" loading="lazy" width="2180" height="1480"></a></div>
+      <div class="fig-t">
+        <div class="top"><span class="verdict v-back">Backup</span><span class="lbl">Not in the paper</span></div>
+        <h3>Simulator speed-up by grid size</h3>
+        <dl>
+          <div><dt>What it shows</dt><dd>How many times faster the new simulator is, with collisions on (bottom line) and off (top line), as the grid grows. Crosses mark sizes where the old simulator timed out.</dd></div>
+          <div><dt>Why backup</dt><dd>It is honest but shows the speed-up falling to about 4–5× at the sizes used, while the paper quotes only "up to 7.3×". Keep it ready in case someone asks "7.3× at what size?"</dd></div>
+          <div><dt>Before you use it</dt><dd>Explain the log scale, and label the points 7.2× (5×5) and 4.7× (10×10).</dd></div>
+        </dl>
+        <p class="file">assets/figures/fig_scalability.png / .pdf</p>
+      </div>
+    </article>
+
+    <article class="fig">
+      <div class="shot"><a href="assets/figures/fig_learning_curve.png"><img src="assets/figures/fig_learning_curve.png" alt="Training reward curves for six runs, rising to about 100 within the first few thousand steps and staying flat" loading="lazy" width="2338" height="1139"></a></div>
+      <div class="fig-t">
+        <div class="top"><span class="verdict v-back">Backup</span><span class="lbl">Not in the paper</span></div>
+        <h3>AI learning curve</h3>
+        <dl>
+          <div><dt>What it shows</dt><dd>The AI's reward during training for all six runs (three seeds, gossip on and off). It reaches about 100 almost immediately and stays flat.</dd></div>
+          <div><dt>Why backup</dt><dd>Useful only if asked "did training converge?" It also invites "is the task too easy?" because the curve is flat from very early on.</dd></div>
+        </dl>
+        <p class="file">assets/figures/fig_learning_curve.png / .pdf</p>
+      </div>
+    </article>
+
+    <article class="fig">
+      <div class="shot"><a href="assets/figures/gossip_ablation.png"><img src="assets/figures/gossip_ablation.png" alt="Three bar panels comparing gossip on and off: success rate, mean steps and mean reward, all nearly identical" loading="lazy" width="3870" height="1249"></a></div>
+      <div class="fig-t">
+        <div class="top"><span class="verdict v-no">Don't use</span><span class="lbl">Not in the paper</span></div>
+        <h3>Gossip on vs off, as bars</h3>
+        <dl>
+          <div><dt>Why not</dt><dd><ul><li>Its title says "DARWIN v2", the code's internal name, which the audience won't recognise.</li><li>Three panels of identical bars take a whole slide to say "no difference".</li></ul></dd></div>
+          <div><dt>Instead</dt><dd>The three-row table in result 5 says it faster.</dd></div>
+        </dl>
+        <p class="file">assets/figures/gossip_ablation.png</p>
+      </div>
+    </article>
+  </div>
+
+  <div class="keepoff">
+    <p class="lbl">Keep off your slides</p>
+    <ul>
+      <li>Anything from <code>results_rev2/figures/archive_mixed_backend/</code>, <code>darwinV2/figures/</code> or <code>results_rev1/figures/</code>. These are older runs where the planners ran on different simulators, so the comparisons are unfair.</li>
+      <li><code>darwinV2/figures/_test_fig4.png</code> ("PDR vs failure rate"). It comes from a software test with made-up curves.</li>
+      <li>The old ratios 4.71× and 3.36×, the "−4131" reward, and "242×". All came from earlier drafts or reconstructions and were withdrawn.</li>
+      <li>"6.7 million deaths in the 1990s". The cited source [3] doesn't contain that figure.</li>
+    </ul>
+  </div>
+
+  <h3>Tables, ready to use</h3>
+  <p class="tbl-note">These are rebuilt from the paper's own numbers in plain wording, so you can copy them onto slides.</p>
+
+  <div class="tbl-wrap"><table>
+    <caption><span class="verdict v-new">Make new</span> Setup at a glance</caption>
+    <thead><tr><th>Setting</th><th>Value</th></tr></thead>
+    <tbody>
+      <tr><td>Radios</td><td>100 on a 10×10 grid (also 225 on 15×15; speed tests to 900)</td></tr>
+      <tr><td>Spacing and range</td><td>400 m apart; 1.5 km radio range; about 31 neighbours each</td></tr>
+      <tr><td>Radio</td><td>865 MHz (India's licence-free band), spreading factor SF12, +20 dBm</td></tr>
+      <tr><td>Task</td><td>Hop from a random radio to one of two safe zones in the grid corners</td></tr>
+      <tr><td>Route-finders compared</td><td>Dijkstra and A*, each static and dynamic, plus the PPO AI</td></tr>
+      <tr><td>Trials</td><td>100 trips per route-finder per grid; 250 per damage level in the sweep</td></tr>
+      <tr><td>Damage levels</td><td>Intact, moderate, heavy (default), severe, extreme</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="tbl-wrap"><table>
+    <caption><span class="verdict v-new">Make new</span> The main result in four lines</caption>
+    <thead><tr><th>Comparison (Dijkstra, 10×10)</th><th class="n">Static</th><th class="n">Dynamic</th><th class="n">Gap</th></tr></thead>
+    <tbody>
+      <tr><td>All 100 trips</td><td class="n">0.145</td><td class="n">0.267</td><td class="n">≈1.8×</td></tr>
+      <tr><td>Same first route, so only re-planning differs (43 trips)</td><td class="n">0.2067</td><td class="n">0.3098</td><td class="n">1.50×, p = 0.0057</td></tr>
+      <tr><td>Trips matched on length</td><td class="n">–</td><td class="n">–</td><td class="n">1.9–2.6×</td></tr>
+      <tr><td>Across damage levels</td><td class="n">–</td><td class="n">–</td><td class="n">1.8–1.9× intact to heavy; ≈1.5× severe, extreme</td></tr>
+    </tbody>
+  </table></div>
+  <p class="tbl-note">Column numbers are average link-quality scores (0 to 1). Put that in the slide subtitle.</p>
+
+  <div class="tbl-wrap"><table>
+    <caption><span class="verdict v-use">Use, simplified</span> Table II: PPO vs each classic method, on hops</caption>
+    <thead><tr><th>Grid</th><th>Compared with</th><th>Result</th><th class="n">Adjusted p</th></tr></thead>
+    <tbody>
+      <tr><td>10×10</td><td>Dijkstra dynamic</td><td><strong style="color:var(--done)">PPO better</strong></td><td class="n">0.000025</td></tr>
+      <tr><td>10×10</td><td>A* dynamic, A* static, Dijkstra static</td><td><strong style="color:var(--sos)">PPO slightly worse</strong></td><td class="n">0.047</td></tr>
+      <tr><td>15×15</td><td>Dijkstra dynamic</td><td><strong style="color:var(--done)">PPO better</strong></td><td class="n">0.0019</td></tr>
+      <tr><td>15×15</td><td>A* dynamic, A* static, Dijkstra static</td><td>No difference</td><td class="n">0.255</td></tr>
+    </tbody>
+  </table></div>
+  <p class="tbl-note">The paper's version also has an "r_rb" column (effect size; negative favours PPO). Drop it for a general audience, but know it: −0.358, +0.184, −0.281, +0.137 to +0.138, top to bottom. "Adjusted" means corrected for running several tests at once. The paper doesn't name the tests; if asked, they are Mann–Whitney U with Holm correction.</p>
+
+  <div class="tbl-wrap"><table>
+    <caption><span class="verdict v-back">Backup</span> Table I: radio settings (trim to these rows)</caption>
+    <thead><tr><th>Setting</th><th>Value</th><th>Plain meaning</th></tr></thead>
+    <tbody>
+      <tr><td>Band</td><td>865 MHz</td><td>India's licence-free band (865–867 MHz)</td></tr>
+      <tr><td>Spreading factor</td><td>SF12, 125 kHz</td><td>Slowest, longest-range LoRa setting</td></tr>
+      <tr><td>Transmit power</td><td>+20 dBm</td><td>100 milliwatts</td></tr>
+      <tr><td>Receiver sensitivity</td><td>−137 dBm</td><td>Can hear extremely faint signals</td></tr>
+      <tr><td>Max message size</td><td>51 bytes</td><td>About one short text line</td></tr>
+      <tr><td>Path-loss exponent / shadowing</td><td>3.8 / 11 dB (heavy)</td><td>How fast signals fade, and how much they vary</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>New charts worth making</h3>
+  <p class="tbl-note">Drawn here from the verified numbers so you can see the shape. Hover or tab to a bar for its value; each chart also opens as a table. Ask for PNG versions if you want them for PowerPoint.</p>
+
+  <div class="charts">
+    <figure class="chart" id="chart-a">
+      <div class="chart-h">
+        <div class="top"><span class="verdict v-new">Make new</span><span class="lbl">Chart A · numbers in the paper</span></div>
+        <h3>Live link scores lead to better-quality routes</h3>
+        <p>Average link-quality score (0 to 1) for Dijkstra, 10×10, heavy damage.</p>
+      </div>
+      <ul class="legend"><li><i class="c-base"></i>Static (counts hops)</li><li><i class="c-dyn"></i>Dynamic (uses live scores)</li></ul>
+      <div class="panels">
+        <div class="panel">
+          <div class="bars">
+            <p class="panel-t">All 100 trips</p>
+            <div class="bar-row"><span>Static</span><div class="track" style="--tick:25%"><div class="bar c-base" style="width:36.25%" tabindex="0" data-tip="All 100 trips · Static: 0.145"></div><span class="bar-v" style="left:36.25%">0.145</span></div></div>
+            <div class="bar-row"><span>Dynamic</span><div class="track" style="--tick:25%"><div class="bar c-dyn" style="width:66.75%" tabindex="0" data-tip="All 100 trips · Dynamic: 0.267 (≈1.8× static)"></div><span class="bar-v" style="left:66.75%">0.267</span></div></div>
+            <div class="axis"><span></span><div><span style="left:0">0</span><span style="left:25%">0.1</span><span style="left:50%">0.2</span><span style="left:75%">0.3</span></div></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="bars">
+            <p class="panel-t">43 trips with the same first route</p>
+            <div class="bar-row"><span>Static</span><div class="track" style="--tick:25%"><div class="bar c-base" style="width:51.68%" tabindex="0" data-tip="Same first route (43 trips) · Static: 0.2067"></div><span class="bar-v" style="left:51.68%">0.207</span></div></div>
+            <div class="bar-row"><span>Dynamic</span><div class="track" style="--tick:25%"><div class="bar c-dyn" style="width:77.45%" tabindex="0" data-tip="Same first route (43 trips) · Dynamic: 0.3098 (1.50×, p = 0.0057)"></div><span class="bar-v" style="left:77.45%">0.310</span></div></div>
+            <div class="axis"><span></span><div><span style="left:0">0</span><span style="left:25%">0.1</span><span style="left:50%">0.2</span><span style="left:75%">0.3</span></div></div>
+          </div>
+        </div>
+      </div>
+      <p class="tbl-note">Why it works: the left pair is the headline; the right pair is the fairest test, where re-planning is the only difference. Two pairs, one colour for "uses live scores", nothing else to decode.</p>
+      <details class="data"><summary>Show as a table</summary>
+        <div class="tbl-wrap"><table><thead><tr><th>Trips</th><th class="n">Static</th><th class="n">Dynamic</th><th class="n">Gap</th></tr></thead><tbody>
+          <tr><td>All 100</td><td class="n">0.145</td><td class="n">0.267</td><td class="n">≈1.8×</td></tr>
+          <tr><td>Same first route (43)</td><td class="n">0.2067</td><td class="n">0.3098</td><td class="n">1.50×</td></tr>
+        </tbody></table></div>
+      </details>
+    </figure>
+
+    <figure class="chart" id="chart-b">
+      <div class="chart-h">
+        <div class="top"><span class="verdict v-new">Make new</span><span class="lbl">Chart B · numbers in the paper</span></div>
+        <h3>The AI sits between the fastest planners and Dijkstra dynamic</h3>
+        <p>Average hops to a safe zone, heavy damage, 100 trips each. Fewer is better.</p>
+      </div>
+      <ul class="legend"><li><i class="c-base"></i>Three fastest planners</li><li><i class="c-ppo"></i>PPO (the AI)</li><li><i class="c-dyn"></i>Dijkstra dynamic</li></ul>
+      <div class="panels">
+        <div class="panel">
+          <div class="bars">
+            <p class="panel-t">10×10 grid (100 radios)</p>
+            <div class="bar-row"><span>Three fastest</span><div class="track" style="--tick:16.667%"><div class="bar c-base" style="width:36.17%" tabindex="0" data-tip="10×10 · A* dynamic, A* static, Dijkstra static: 2.17 hops"></div><span class="bar-v" style="left:36.17%">2.17</span></div></div>
+            <div class="bar-row"><span>PPO</span><div class="track" style="--tick:16.667%"><div class="bar c-ppo" style="width:41.33%" tabindex="0" data-tip="10×10 · PPO: 2.48 hops (slightly worse than the fastest, p = 0.047)"></div><span class="bar-v" style="left:41.33%">2.48</span></div></div>
+            <div class="bar-row"><span>Dijkstra dynamic</span><div class="track" style="--tick:16.667%"><div class="bar c-dyn" style="width:53.83%" tabindex="0" data-tip="10×10 · Dijkstra dynamic: 3.23 hops (PPO better, p = 0.000025)"></div><span class="bar-v" style="left:53.83%">3.23</span></div></div>
+            <div class="axis"><span></span><div><span style="left:0">0</span><span style="left:16.667%">1</span><span style="left:33.333%">2</span><span style="left:50%">3</span><span style="left:66.667%">4</span><span style="left:83.333%">5</span></div></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="bars">
+            <p class="panel-t">15×15 grid (225 radios)</p>
+            <div class="bar-row"><span>Three fastest</span><div class="track" style="--tick:16.667%"><div class="bar c-base" style="width:54%" tabindex="0" data-tip="15×15 · A* dynamic, A* static, Dijkstra static: 3.23–3.25 hops"></div><span class="bar-v" style="left:54%">3.23–3.25</span></div></div>
+            <div class="bar-row"><span>PPO</span><div class="track" style="--tick:16.667%"><div class="bar c-ppo" style="width:59.33%" tabindex="0" data-tip="15×15 · PPO: 3.56 hops (no significant difference from the fastest, p = 0.255)"></div><span class="bar-v" style="left:59.33%">3.56</span></div></div>
+            <div class="bar-row"><span>Dijkstra dynamic</span><div class="track" style="--tick:16.667%"><div class="bar c-dyn" style="width:73.33%" tabindex="0" data-tip="15×15 · Dijkstra dynamic: 4.40 hops (PPO better, p = 0.0019)"></div><span class="bar-v" style="left:73.33%">4.40</span></div></div>
+            <div class="axis"><span></span><div><span style="left:0">0</span><span style="left:16.667%">1</span><span style="left:33.333%">2</span><span style="left:50%">3</span><span style="left:66.667%">4</span><span style="left:83.333%">5</span></div></div>
+          </div>
+        </div>
+      </div>
+      <p class="tbl-note">Why it works: averages separate agents whose medians tie, and grouping the three near-identical planners leaves three bars per grid. Put the simplified Table II beside it.</p>
+      <details class="data"><summary>Show as a table</summary>
+        <div class="tbl-wrap"><table><thead><tr><th>Route-finder</th><th class="n">10×10</th><th class="n">15×15</th></tr></thead><tbody>
+          <tr><td>Three fastest planners</td><td class="n">2.17</td><td class="n">3.23–3.25</td></tr>
+          <tr><td>PPO</td><td class="n">2.48</td><td class="n">3.56</td></tr>
+          <tr><td>Dijkstra dynamic</td><td class="n">3.23</td><td class="n">4.40</td></tr>
+        </tbody></table></div>
+      </details>
+    </figure>
+
+    <figure class="chart is-proj" id="chart-c">
+      <div class="chart-h">
+        <div class="top"><span class="verdict v-back">Backup</span><span class="lbl" style="color:var(--proj)">Chart C · project files only</span></div>
+        <h3>Same route length, still better links</h3>
+        <p>Average link-quality score for trips of equal length, 10×10. Answers "isn't the gap just because of longer routes?"</p>
+      </div>
+      <ul class="legend"><li><i class="c-dyn"></i>Dijkstra dynamic</li><li><i class="c-base"></i>Best of the other four</li></ul>
+      <div class="panels">
+        <div class="panel">
+          <div class="bars">
+            <p class="panel-t">Trips of 2 hops</p>
+            <div class="bar-row"><span>Dijkstra dynamic</span><div class="track" style="--tick:20%"><div class="bar c-dyn" style="width:72.4%" tabindex="0" data-tip="2-hop trips · Dijkstra dynamic: 0.362 (18 trips)"></div><span class="bar-v" style="left:72.4%">0.362</span></div></div>
+            <div class="bar-row"><span>Best other</span><div class="track" style="--tick:20%"><div class="bar c-base" style="width:32.2%" tabindex="0" data-tip="2-hop trips · A* dynamic (best of the rest): 0.161 (37 trips)"></div><span class="bar-v" style="left:32.2%">0.161</span></div></div>
+            <div class="axis"><span></span><div><span style="left:0">0</span><span style="left:20%">0.1</span><span style="left:40%">0.2</span><span style="left:60%">0.3</span><span style="left:80%">0.4</span></div></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="bars">
+            <p class="panel-t">Trips of 3 hops</p>
+            <div class="bar-row"><span>Dijkstra dynamic</span><div class="track" style="--tick:20%"><div class="bar c-dyn" style="width:46.6%" tabindex="0" data-tip="3-hop trips · Dijkstra dynamic: 0.233 (20 trips)"></div><span class="bar-v" style="left:46.6%">0.233</span></div></div>
+            <div class="bar-row"><span>Best other</span><div class="track" style="--tick:20%"><div class="bar c-base" style="width:24%" tabindex="0" data-tip="3-hop trips · A* dynamic (best of the rest): 0.120 (40 trips)"></div><span class="bar-v" style="left:24%">0.120</span></div></div>
+            <div class="axis"><span></span><div><span style="left:0">0</span><span style="left:20%">0.1</span><span style="left:40%">0.2</span><span style="left:60%">0.3</span><span style="left:80%">0.4</span></div></div>
+          </div>
+        </div>
+      </div>
+      <p class="tbl-note">The paper gives only the range (1.9–2.6×); these values come from <code>results_commaware/FINDINGS.md</code> §5. The trip counts are small (18 and 20 for the dynamic planner), so keep this for Q&amp;A.</p>
+      <details class="data"><summary>Show as a table</summary>
+        <div class="tbl-wrap"><table><thead><tr><th>Hops</th><th class="n">Dijkstra dynamic</th><th class="n">A* dynamic</th><th class="n">A* static</th><th class="n">PPO</th><th class="n">Dijkstra static</th></tr></thead><tbody>
+          <tr><td>2</td><td class="n">0.362 (18)</td><td class="n">0.161 (37)</td><td class="n">0.157 (37)</td><td class="n">0.155 (34)</td><td class="n">0.139 (37)</td></tr>
+          <tr><td>3</td><td class="n">0.233 (20)</td><td class="n">0.120 (40)</td><td class="n">0.112 (40)</td><td class="n">0.089 (47)</td><td class="n">0.090 (40)</td></tr>
+        </tbody></table></div>
+      </details>
+    </figure>
+
+    <figure class="chart is-proj" id="chart-d">
+      <div class="chart-h">
+        <div class="top"><span class="verdict v-back">Backup</span><span class="lbl" style="color:var(--proj)">Chart D · project files only</span></div>
+        <h3>How much faster, by grid size</h3>
+        <p>Speed-up of the new simulator over the reference, collisions on, averaged over three failure rates.</p>
+      </div>
+      <ul class="legend"><li><i class="c-dyn"></i>10×10, the size used for the results</li><li><i class="c-base"></i>Other sizes</li></ul>
+      <div class="bars">
+        <div class="bar-row"><span>5×5 (25)</span><div class="track" style="--tick:20%"><div class="bar c-base" style="width:72%" tabindex="0" data-tip="5×5 · 7.2× (the paper's 7.3× is the zero-failure run at this size)"></div><span class="bar-v" style="left:72%">7.2×</span></div></div>
+        <div class="bar-row"><span>10×10 (100)</span><div class="track" style="--tick:20%"><div class="bar c-dyn" style="width:47%" tabindex="0" data-tip="10×10 · 4.7×"></div><span class="bar-v" style="left:47%">4.7×</span></div></div>
+        <div class="bar-row"><span>15×15 (225)</span><div class="track" style="--tick:20%"><div class="bar c-base" style="width:40%" tabindex="0" data-tip="15×15 · 4.0×"></div><span class="bar-v" style="left:40%">4.0×</span></div></div>
+        <div class="bar-row"><span>20×20 (400)</span><div class="track" style="--tick:20%"><div class="bar c-base" style="width:35%" tabindex="0" data-tip="20×20 · 3.5× (pulled down by one run that took about five times longer than the rest)"></div><span class="bar-v" style="left:35%">3.5×</span></div></div>
+        <div class="bar-row"><span>25×25 (625)</span><div class="track" style="--tick:20%"><div class="bar c-base" style="width:45%" tabindex="0" data-tip="25×25 · 4.5×"></div><span class="bar-v" style="left:45%">4.5×</span></div></div>
+        <div class="bar-row"><span>30×30 (900)</span><div class="track" style="--tick:20%"><div class="bar c-base" style="width:41%" tabindex="0" data-tip="30×30 · 4.1×"></div><span class="bar-v" style="left:41%">4.1×</span></div></div>
+        <div class="axis"><span></span><div><span style="left:0">0</span><span style="left:20%">2×</span><span style="left:40%">4×</span><span style="left:60%">6×</span><span style="left:80%">8×</span></div></div>
+      </div>
+      <p class="tbl-note">Computed from <code>results_rev1/scalability.csv</code>. The 20×20 dip comes from one run of the new simulator that took about five times longer than the others. A plain bar chart avoids the log scale of <code>fig_scalability</code>.</p>
+      <details class="data"><summary>Show as a table</summary>
+        <div class="tbl-wrap"><table><thead><tr><th>Grid (radios)</th><th class="n">Speed-up</th></tr></thead><tbody>
+          <tr><td>5×5 (25)</td><td class="n">7.2×</td></tr><tr><td>10×10 (100)</td><td class="n">4.7×</td></tr><tr><td>15×15 (225)</td><td class="n">4.0×</td></tr>
+          <tr><td>20×20 (400)</td><td class="n">3.5×</td></tr><tr><td>25×25 (625)</td><td class="n">4.5×</td></tr><tr><td>30×30 (900)</td><td class="n">4.1×</td></tr>
+        </tbody></table></div>
+      </details>
+    </figure>
+  </div>
+</section>
+
+<section class="sec" id="words" aria-labelledby="words-h">
+  <div class="sec-h">
+    <h2 id="words-h">Words to know</h2>
+    <p>The only jargon you need for the results part, in plain words.</p>
+  </div>
+  <dl class="gloss">
+    <div><dt>LoRa</dt><dd>A low-power radio that sends small messages several kilometres, slowly. Think text messages, not voice.</dd></div>
+    <div><dt>Mesh</dt><dd>A network where devices pass messages to each other instead of through a central tower.</dd></div>
+    <div><dt>Gateway</dt><dd>The central receiver in normal LoRa networks (LoRaWAN). ABOT doesn't need one.</dd></div>
+    <div><dt>Hop</dt><dd>One radio-to-radio jump. "Steps to safe zone" in the paper means hops.</dd></div>
+    <div><dt>Safe zone</dt><dd>A rescue point the trip has to reach. There are two, in grid corners.</dd></div>
+    <div><dt>PDR (packet delivery ratio)</dt><dd>Strictly, the share of messages that arrive. In the routing results it's used for a link-quality score, so call it that.</dd></div>
+    <div><dt>Dijkstra, A*</dt><dd>Classic shortest-route methods, the kind a sat-nav uses. A* adds a "head roughly towards the goal" hint.</dd></div>
+    <div><dt>Static / dynamic</dt><dd>Static plans once by counting hops. Dynamic weighs links by live quality and re-plans when the route ahead degrades.</dd></div>
+    <div><dt>PPO</dt><dd>A reinforcement-learning method: the AI tries actions, gets points (reward) for good outcomes, and slowly learns what works.</dd></div>
+    <div><dt>Reward</dt><dd>The AI's score per trip: +100 for arriving, −1 per hop, penalties for bad choices. It mostly mirrors the hop count.</dd></div>
+    <div><dt>Livelock</dt><dd>A stuck loop: the AI keeps repeating the same useless move.</dd></div>
+    <div><dt>Seed</dt><dd>The starting value for the simulation's randomness. Different seeds give different scenarios; a "seed block" is a group of trials run from one seed.</dd></div>
+    <div><dt>Median, IQR</dt><dd>The middle value, and the range covering the middle half of results. Used because a few extreme trips can distort an average.</dd></div>
+    <div><dt>p-value</dt><dd>How likely a gap this big would be if there were really no difference. Below 0.05 is the usual bar for "real".</dd></div>
+    <div><dt>Adjusted p</dt><dd>A p-value corrected because several comparisons were tested at once (here, Holm correction).</dd></div>
+    <div><dt>KS test</dt><dd>A check of whether two sets of results look like they come from the same source. Used to compare the two simulators.</dd></div>
+    <div><dt>Path-loss exponent, shadowing</dt><dd>How fast a signal weakens with distance (higher means faster), and how much it varies randomly from place to place.</dd></div>
+    <div><dt>SF12</dt><dd>LoRa's slowest, longest-range setting. Each message takes about 2.5 seconds to send.</dd></div>
+    <div><dt>Duty cycle</dt><dd>The share of time a radio is allowed to transmit. Europe's rule for this band is 1%.</dd></div>
+    <div><dt>Collisions (contention)</dt><dd>Two radios sending at once garble each other. The stronger one survives only if it's clearly louder (6 dB).</dd></div>
+    <div><dt>Gossip</dt><dd>Radios passing information to their neighbours, who pass it on, like a rumour spreading.</dd></div>
+    <div><dt>Critic, explained variance</dt><dd>The part of the AI that estimates "how good is this situation", and a score of how well it does that (1.0 is perfect; below 0 is worse than guessing the average).</dd></div>
+  </dl>
+</section>
+
+<footer class="foot">
+  <p>Sources: the camera-ready paper in this folder; result files in the code directory (<code>darwinV2/results_rev1</code>, <code>results_rev2</code>, <code>results_commaware</code>, <code>results_15x15</code>); and this folder's <code>context.md</code> and red-team notes. Amber items name their file. Numbers were re-checked against those files on 19 October 2026; nothing was re-run.</p>
+  <p>Related pages in this folder: <code>ABOT-red-team-explained.html</code> (the 52 criticisms) and <code>ABOT-qa-prep-plan.html</code> (Q&amp;A prep).</p>
+</footer>
+
+</main>
+<div class="tip" id="tip" role="tooltip" hidden></div>
+<script>
+(function () {
+  var tip = document.getElementById('tip');
+  function show(el, x, y) {
+    tip.textContent = el.getAttribute('data-tip');
+    tip.hidden = false;
+    var r = tip.getBoundingClientRect();
+    var left = Math.min(Math.max(8, x + 12), window.innerWidth - r.width - 8);
+    var top = y - r.height - 10;
+    if (top < 8) top = y + 16;
+    tip.style.left = left + 'px';
+    tip.style.top = top + 'px';
+  }
+  function hide() { tip.hidden = true; }
+  document.querySelectorAll('[data-tip]').forEach(function (el) {
+    el.addEventListener('pointermove', function (e) { show(el, e.clientX, e.clientY); });
+    el.addEventListener('pointerleave', hide);
+    el.addEventListener('focus', function () { var r = el.getBoundingClientRect(); show(el, r.left + r.width / 2, r.top); });
+    el.addEventListener('blur', hide);
+    el.setAttribute('role', 'img');
+    el.setAttribute('aria-label', el.getAttribute('data-tip'));
+  });
+  window.addEventListener('scroll', hide, { passive: true });
+})();
+</script>
+</body>
+</html>
