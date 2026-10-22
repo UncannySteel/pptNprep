@@ -707,3 +707,22 @@ New facts behind it (read, not run):
   - No `.py` file in `darwinV2/` has a mobility model; node positions are fixed. Section III's "as nodes fail or move out of range" is half-simulated.
   - ABOT's own [1] says density *and traffic load* limit availability, yet no ABOT run varies the load.
 - **The overlap to concede:** `dijkstra_dynamic` (shortest path, cost 1/score per hop) is OLSR-with-ETX in spirit, but with the map handed over by the simulator. Gap 2's contrast holds against [7] and [8], not against these protocols.
+
+## 27. The talk deck (2026-10-20)
+
+`ABOT-R10HTC-2026-talk.pptx`: 24 slides on the HTC 2026 template, 66 clicks, with the speech in the speaker notes.
+- **Built, not hand-edited.** `python -E -P tools/deck/build_deck.py` (standard library only) reads `assets/template/HTC_2026_Presentation_Template.pptx`, `talk/speech-v2.docx` (a copy of the user's `SPEECH v2 conv.docx`) and `assets/figures/fig4_pdr_vs_distance.png`. Edit the script and rebuild; edits made in PowerPoint are lost on the next build.
+- **QA:** `tools/deck/qa_render.ps1` opens the deck in PowerPoint (a clean open is the first check), flags text overflow and exports every slide before the first click and after the last. Its two width warnings on slides 12 and 13 are false positives. The pptx skill's `validate.py` passes against the template.
+- **Fig. 1 slide (12)** shows the paper's architecture figure (`assets/figures/fig1_architecture_v2.png`). Three clicks frame the decisions-down arrows, the measurements-up arrows and the dashed harness box. The speech has no walkthrough of the figure, so its notes are written in `EXTRA_NOTES` in the script, with two "if asked" answers: PPO "may replace solver" (rule 4) and the planners' full network view (triage Q3). Slide 13 then starts on Layer 1; the paper's text says "three layers", but the slides say four (rule 10).
+- **Notes:** the speech is cut per slide with `[CLICK n]` cues. The build stops if a cue no longer matches the speech or a slide's click count disagrees with its cues. After editing the speech, copy it over `talk/speech-v2.docx` and fix `CUES` in the script.
+- **Animations** are written in the XML PowerPoint itself produces (captured from PowerPoint, then read back to check). Existing work shows names only; each name or subheader turns into a navy pill as it is spoken (an overlay that fades in, then out on the next click). B.A.T.M.A.N., Babel and OLSR sit on the gaps slide, cited as Diniz et al., ICUAS 2025 (§26), because the paper's reference list doesn't include them.
+- **Wording follows triage §2:** the airtime limitation names no ETSI limit (rule 9); 7.3× is "up to", with 4.7× at 10×10 (rule 6); Fig. 2 is "from the channel model" (rule 7); "four layers" (rule 10); the link-quality score is defined as not delivery (rule 2).
+- **Outside numbers:** slide 3 uses the WMO Atlas of Mortality and Economic Losses (2021): disasters 5× over 1970–2019, deaths down about 3×, losses 7× from the 1970s to the 2010s. These were checked against WMO and UN sources on 2026-10-20, and the slide cites them. Bangkok and Kashmir appear without numbers (not verified).
+- **Speech lines that differ from the paper or code** (kept in the notes, not on slides):
+  - "nodes ... move out of range": no mobility model (§26);
+  - "two radios at opposite corners": both safe zones are corners of one edge (§11);
+  - "15×15 ... for speed testing": 15×15 is also the second baseline grid;
+  - "exceeds the 1 percent ETSI limit": see rule 9;
+  - the R2 sentence "p values come well below 0.05" mixes the two comparisons.
+- **Length:** the speech is about 4,000 words, roughly 27 minutes at a normal pace.
+- **Tooling on this machine:** no python-pptx, markitdown, LibreOffice, pdftoppm or pptxgenjs. PowerPoint COM works for rendering (`Slide.Export`). In PowerShell, `$S` and `$s` are the same variable.
